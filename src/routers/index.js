@@ -1,3 +1,3 @@
 module.exports = {
-  cartRouter: require("./cart"),
+  product: require("./product"),
 };

@@ -1,4 +1,4 @@
 module.exports = {
-  connection:require('./connection')
-  
+  connection: require("./connection"),
+  ProductRepository: require("./repository/product-repository"),
 };
