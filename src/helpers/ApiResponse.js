@@ -1,17 +1,17 @@
 class ApiResponse {
-    constructor() {
+    constructor(res) {
+        this.Response = res
         this.Status = 200
         this.Success = true
         this.Data = {}
         this.Message = ''
     }
-
-    status(status) {
-        this.Status = status
+    removeCookie(name) {
+        this.Response.clearCookie(name)
         return this
     }
-    success(success) {
-        this.Success = success
+    status(status) {
+        this.Status = status
         return this
     }
     data(data) {
@@ -22,18 +22,21 @@ class ApiResponse {
         this.Message = msg
         return this
     }
-    send(res) {
+    success() {
+        return this.Status === 200 ? true : false
+    }
+    send() {
         const resObject = {
             StatusCode: this.Status,
-            Success: this.Success,
+            Success: this.success(),
             Data: this.Data,
             Message: this.Message,
         }
         if (!resObject.Message) delete resObject.Message
         if (Object.keys(resObject.Data).length <= 0) delete resObject.Data
 
-        return res.status(resObject.StatusCode).json(resObject)
+        return this.Response.status(resObject.StatusCode).json(resObject)
     }
 }
 
-module.exports = new ApiResponse()
+module.exports = ApiResponse

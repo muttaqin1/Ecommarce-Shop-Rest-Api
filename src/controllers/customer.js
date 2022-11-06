@@ -22,11 +22,7 @@ const signup = async (req, res, next) => {
             salt,
         }
         const customer = await customerRepository.Create(data)
-        res.status(200).json({
-            Success: true,
-            StatusCode: res.statusCode,
-            customer,
-        })
+        new ApiResponse(res).status(200).data({ customer }).send()
     } catch (e) {
         next(e)
     }
@@ -46,7 +42,8 @@ const signin = async (req, res, next) => {
         }
         const token = await Auth.GenerateSignature(payload)
         await Auth.SendAuthCookie(res, token)
-        ApiResponse.status(200).success(true).data({ token }).send(res)
+
+        new ApiResponse(res).status(200).data({ token }).send(res)
     } catch (e) {
         next(e)
     }
@@ -54,11 +51,7 @@ const signin = async (req, res, next) => {
 
 const signout = async (req, res, next) => {
     try {
-        res.clearCookie(Name).status(200).json({
-            Success: true,
-            StatusCode: res.statusCode,
-            Message: 'signout successful',
-        })
+        new ApiResponse(res).removeCookie(Name).status(200).msg('Signout Success!').send()
     } catch (e) {
         next(e)
     }
