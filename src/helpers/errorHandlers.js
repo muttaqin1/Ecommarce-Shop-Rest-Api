@@ -10,7 +10,7 @@ const ErrorHandler = (err, req, res, next) => {
   console.log(err);
   res.status(err.statusCode || 500).json({
     Success: false,
-    StatusCode: err.statusCode,
+    StatusCode: res.statusCode,
     Message: err.message,
   });
 };

@@ -7,7 +7,7 @@ class ProductRepository {
     try {
       return await Product.create(object);
     } catch {
-      throw APIError(
+      throw new APIError(
         "API ERROR",
         STATUS_CODES.INTERNAL_ERROR,
         "Unable to create Product!"
@@ -18,7 +18,7 @@ class ProductRepository {
     try {
       return await Product.find();
     } catch {
-      throw APIError(
+      throw new APIError(
         "API ERROR",
         STATUS_CODES.INTERNAL_ERROR,
         "Unable to find Product!"
@@ -30,7 +30,7 @@ class ProductRepository {
     try {
       return await Product.findById(id);
     } catch {
-      throw APIError(
+      throw new APIError(
         "API ERROR",
         STATUS_CODES.INTERNAL_ERROR,
         "Unable to find Product!"
@@ -40,12 +40,36 @@ class ProductRepository {
 
   async FindByCategory(category) {
     try {
-      return await ProductModel.find({ type: category });
+      return await Product.find({ type: category });
     } catch {
-      throw APIError(
+      throw new APIError(
         "API Error",
         STATUS_CODES.INTERNAL_ERROR,
         "Unable to Find Category"
+      );
+    }
+  }
+
+  async DeleteProduct(id) {
+    try {
+      return await Product.deleteOne({ _id: id });
+    } catch {
+      throw new APIError(
+        "API Error",
+        STATUS_CODES.INTERNAL_ERROR,
+        "Unable to delete product"
+      );
+    }
+  }
+
+  async FindSelectedProducts(ids) {
+    try {
+      return await Product.find({ _id: { $in: ids } });
+    } catch {
+      throw new APIError(
+        "API Error",
+        STATUS_CODES.INTERNAL_ERROR,
+        "Unable to find product selected products"
       );
     }
   }
