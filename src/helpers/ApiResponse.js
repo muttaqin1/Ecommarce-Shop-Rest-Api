@@ -1,3 +1,9 @@
+/*
+ * Author:Muttaqin Muhammad
+ * email:mdmuttaqin20@gmail.com
+ * facebook:https://www.facebook.com/Muttaqin01
+ * description: Creating a class to send response and prevent code repeating. .
+ */
 class ApiResponse {
     constructor(res) {
         this.Response = res
@@ -6,19 +12,23 @@ class ApiResponse {
         this.Data = {}
         this.Message = ''
     }
-    removeCookie(name) {
-        this.Response.clearCookie(name)
-        return this
-    }
     status(status) {
+        if (!status && typeof status !== 'number' && status >= 1000)
+            throw new Error(
+                'Status is required and it must have to be Number and a valid http status code.'
+            )
         this.Status = status
         return this
     }
     data(data) {
+        if (!data && typeof data !== 'object')
+            throw new TypeError('Data is required and it must be a valid object.')
         this.Data = data
         return this
     }
     msg(msg) {
+        if (!msg && typeof msg !== 'string')
+            throw new TypeError('Message is required and it must be a valid  string.')
         this.Message = msg
         return this
     }
@@ -26,17 +36,14 @@ class ApiResponse {
         return this.Status === 200 ? true : false
     }
     send() {
-        const resObject = {
-            StatusCode: this.Status,
+        const payload = {
             Success: this.success(),
-            Data: this.Data,
+            StatusCode: this.Status,
             Message: this.Message,
         }
-        if (!resObject.Message) delete resObject.Message
-        if (Object.keys(resObject.Data).length <= 0) delete resObject.Data
-
-        return this.Response.status(resObject.StatusCode).json(resObject)
+        Object.assign(payload, this.Data)
+        if (!payload.Message) delete payload.Message
+        return this.Response.status(payload.StatusCode).json(payload)
     }
 }
-
 module.exports = ApiResponse

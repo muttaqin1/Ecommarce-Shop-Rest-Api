@@ -19,5 +19,15 @@ const connection = async () => {
     process.exit(1);
   }
 };
+process.on('SIGINT', () => {
+  mongoose.connection.close(() => {
+console.log('Mongoose connection disconnected!')
+    process.exit(0);
+  });
+});
+
+mongoose.connection.on('error', (err) => {
+console.log(`Mongoose default connection Error: ${err}`)
+});
 
 module.exports = connection;

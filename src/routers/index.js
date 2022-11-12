@@ -1,4 +1,5 @@
 module.exports = {
+  auth:require('./auth'),
   product: require("./product"),
   customer:require('./customer')
 };

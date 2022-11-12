@@ -33,6 +33,8 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
+},{
+  timestamps:true
 });
 
 const Product = new model("Product", productSchema);

@@ -1,60 +1,57 @@
-const { CustomerRepository } = require('../database')
-const Auth = require('../helpers/Auth')
-const { UnauthorizationError } = require('../helpers/AppError')
-
-const ApiResponse = require('../helpers/ApiResponse')
-const customerRepository = new CustomerRepository()
-
+const { CustomerRepository } = require("../database");
 const {
-    cookie: { Name },
-} = require('../config')
+  UnauthorizationError,
+  BadRequestError,
+} = require("../helpers/AppError");
+const ApiResponse = require("../helpers/ApiResponse");
+const customerRepository = new CustomerRepository();
 
-const signup = async (req, res, next) => {
-    const { name, phone, email, password } = req.body
-    try {
-        const salt = await Auth.GenerateSalt()
-        const pass = await Auth.GeneratePassword(password, salt)
-        const data = {
-            name,
-            phone,
-            email,
-            password: pass,
-            salt,
-        }
-        const customer = await customerRepository.Create(data)
-        new ApiResponse(res).status(200).data({ customer }).send()
-    } catch (e) {
-        next(e)
-    }
-}
+const addNewAddress = async (req, res, next) => {
+  try {
+    const data = {
+      ...req.body,
+      id: req.user._id,
+    };
+    const updatedCustomer = await customerRepository.CreateAddress(data);
+    if (!updatedCustomer)
+      throw new BadRequestError("failed to update Customer!");
 
-const signin = async (req, res, next) => {
-    const { email, password } = req.body
-    try {
-        const customer = await customerRepository.FindByEmail(email)
-        if (!customer) throw new UnauthorizationError('Access Denied!')
+    new ApiResponse(res).status(200).data({ updatedCustomer }).send();
+  } catch (e) {
+    next(e);
+  }
+};
 
-        const verify = await Auth.ValidatePassword(password, customer.password, customer.salt)
-        if (!verify) throw new UnauthorizationError('Access Denied!')
-        const payload = {
-            id: customer._id,
-            email: customer.email,
-        }
-        const token = await Auth.GenerateSignature(payload)
-        await Auth.SendAuthCookie(res, token)
+const getProfile = async (req, res, next) => {
+  const { _id } = req.user;
+  const profile = await customerRepository.FindById(_id);
+  new ApiResponse(res).status(200).data({ profile }).send();
+};
+const addToCart = async (req, res, next) => {
+  const data = {
+    id: req.user._id,
+    ...req.body,
+  };
+  try {
+    const updatedCart = await customerRepository.AddToCart(data);
+    new ApiResponse(res).status(200).data({ cart:updatedCart.cart }).send();
+  } catch (e) {
+    next(e);
+  }
+};
 
-        new ApiResponse(res).status(200).data({ token }).send(res)
-    } catch (e) {
-        next(e)
-    }
-}
+const removeToCart = async (req, res, next) => {
+  try {
+   const updatedCart= await customerRepository.RemoveToCart(req.user._id, req.params.productId);
+    new ApiResponse(res).status(200).data({cart:updatedCart.cart}).send();
+  } catch (e) {
+    next(e);
+  }
+};
+module.exports = {
 
-const signout = async (req, res, next) => {
-    try {
-        new ApiResponse(res).removeCookie(Name).status(200).msg('Signout Success!').send()
-    } catch (e) {
-        next(e)
-    }
-}
-
-module.exports = { signup, signin, signout }
+  addNewAddress,
+  getProfile,
+  addToCart,
+  removeToCart,
+};

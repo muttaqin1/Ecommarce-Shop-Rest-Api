@@ -33,27 +33,32 @@ class APIError extends AppError {
 
 //400
 class BadRequestError extends AppError {
-    constructor(description = 'Bad request', logingErrorResponse) {
-        super('NOT FOUND', STATUS_CODES.BAD_REQUEST, description, true, false, logingErrorResponse)
+    constructor(description = 'Bad request') {
+        super('BAD REQUEST', STATUS_CODES.BAD_REQUEST, description, true)
+    }
+}
+
+class BadTokenError extends AppError {
+    constructor(description = 'Bad token') {
+        super('BadTokenError', STATUS_CODES.UN_AUTHORISED, description, true)
+    }
+}
+
+class TokenExpiredError extends AppError {
+    constructor(description = 'Token is expired!') {
+        super('TokenExpiredError', STATUS_CODES.UN_AUTHORISED, description, true)
     }
 }
 
 class NotFoundError extends AppError {
-    constructor(description, logingErrorResponse) {
-        super('NOT FOUND', STATUS_CODES.NOT_FOUND, description, true, false, logingErrorResponse)
-    }
-}
-
-//400
-class ValidationError extends AppError {
-    constructor(description = 'Validation Error', errorStack) {
-        super('BAD REQUEST', STATUS_CODES.BAD_REQUEST, description, true, errorStack)
+    constructor(description) {
+        super('NotFoundError', STATUS_CODES.NOT_FOUND, description, true)
     }
 }
 
 class UnauthorizationError extends AppError {
-    constructor(description = 'Unauthorized!', errorStack) {
-        super('Unauthorization Error', STATUS_CODES.UN_AUTHORISED, description, true, errorStack)
+    constructor(description = 'Unauthorized!') {
+        super('Unauthorization Error', STATUS_CODES.UN_AUTHORISED, description, true)
     }
 }
 
@@ -62,7 +67,8 @@ module.exports = {
     APIError,
     BadRequestError,
     NotFoundError,
-    ValidationError,
     STATUS_CODES,
     UnauthorizationError,
+    BadTokenError,
+    TokenExpiredError,
 }

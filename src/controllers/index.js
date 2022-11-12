@@ -1,4 +1,5 @@
 module.exports = {
-  productController: require("./product"),
-  customerController:require('./customer')
-};
+    authController: require('./auth'),
+    productController: require('./product'),
+    customerController: require('./customer'),
+}

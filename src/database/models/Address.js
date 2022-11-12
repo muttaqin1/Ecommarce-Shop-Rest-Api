@@ -17,6 +17,8 @@ const addressSchema = new Schema({
     type: String,
     required: true,
   },
+}, {
+  timestamps:true
 });
 
 module.exports = new model("Address", addressSchema);

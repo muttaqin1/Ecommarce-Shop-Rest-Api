@@ -1,11 +1,13 @@
-const router = require("express").Router();
+const router = require('express').Router()
 
 const {
-  customerController: { signup, signin, signout },
-} = require("../controllers");
+    customerController: { addNewAddress, getProfile, addToCart, removeToCart },
+} = require('../controllers')
+const { Authentication } = require('../middlewares')
 
-router.post("/auth/signup", signup);
-router.post('/auth/signin', signin)
-router.delete('/auth/signout', signout)
-
-module.exports = router;
+router.use(Authentication) //Below all the routes are protected
+router.post('/customer/address', addNewAddress)
+router.get('/customer/profile', getProfile)
+router.delete('/customer/cart/:productId', removeToCart)
+router.post('/customer/cart', addToCart)
+module.exports = router
