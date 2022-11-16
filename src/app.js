@@ -7,9 +7,9 @@ const { expressMiddlewares } = require('./middlewares')
 const app = express()
 app.use(expressMiddlewares)
 
+app.use('/api', auth)
 app.use('/api', product)
 app.use('/api', customer)
-app.use('/api', auth)
 
 app.use(errorHandlers)
 module.exports = app

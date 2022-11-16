@@ -10,27 +10,32 @@ const customerSchema = new Schema(
             type: String,
             required: true,
         },
-        address: [{ type: Schema.Types.ObjectId, ref: 'Address', require: true }],
         email: {
             type: String,
             required: true,
         },
-        role: {
-            type: String,
-            enum: ['ADMIN', 'CUSTOMER'],
-            default: 'CUSTOMER',
+        avatar: {
+            url: { type: String, required: true, trim: true },
+            publicId: { type: String, required: true, trim: true },
         },
         password: {
             type: String,
             required: true,
             select: false,
         },
-
         salt: {
             type: String,
             required: true,
             select: false,
         },
+        role: {
+            type: String,
+            enum: ['ADMIN', 'CUSTOMER', 'SELLER'],
+            default: 'CUSTOMER',
+        },
+
+        address: [{ type: Schema.Types.ObjectId, ref: 'Address', require: true }],
+
         cart: [
             {
                 product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
@@ -48,6 +53,7 @@ const customerSchema = new Schema(
     },
     {
         timestamps: true,
+        versionKey: false,
     }
 )
 

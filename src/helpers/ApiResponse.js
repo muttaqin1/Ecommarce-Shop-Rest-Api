@@ -20,6 +20,20 @@ class ApiResponse {
         this.Status = status
         return this
     }
+    sendCookie(name,expiry, payload) {
+        if (!payload && !name) throw new Error('Name and payload is required to send a cookie.')
+        this.Response.cookie(name, payload, {
+            httpOnly: true,
+            signed: true,
+            maxAge: expiry,
+        })
+        return this
+    }
+    removeCookie(name) {
+        if (!name) throw new Error('Name is required to remove a cookie.')
+        this.Response.clearCookie(name)
+        return this
+    }
     data(data) {
         if (!data && typeof data !== 'object')
             throw new TypeError('Data is required and it must be a valid object.')

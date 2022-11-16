@@ -1,10 +1,13 @@
+const router = require('express').Router()
+const { auth } = require('./schema')
+const { validator, src } = require('../helpers/validators')
 const { CustomerRepository, KeystoreRepository } = require('../database')
 const customerRepository = new CustomerRepository()
 const AuthUtils = require('../helpers/Auth/AuthUtils')
 const { BadTokenError, UnauthorizationError } = require('../helpers/AppError')
 const JWT = require('../helpers/Auth/JWT')
 const ApiResponse = require('../helpers/ApiResponse')
-module.exports = async (req, res, next) => {
+const authentication = async (req, res, next) => {
     try {
         req.accessToken = await AuthUtils.getAccessToken(req.headers.authorization)
 
@@ -15,7 +18,7 @@ module.exports = async (req, res, next) => {
         if (!findCustomer) throw new UnauthorizationError('user not registered!')
         req.user = findCustomer
 
-        const keystore = await KeystoreRepository.findforKey(req.user._id, primaryKey)
+        const keystore = await KeystoreRepository.FindforKey(req.user._id, primaryKey)
         if (!keystore) throw new UnauthorizationError('Invalid Access Token!')
         req.keystore = keystore
 
@@ -24,3 +27,5 @@ module.exports = async (req, res, next) => {
         new ApiResponse(res).status(403).msg(error.message).send()
     }
 }
+
+module.exports = [validator(auth, src.HEADER), authentication]

@@ -18,7 +18,7 @@ class CustomerRepository {
     async FindById(id) {
         try {
             return await Customer.findById(id)
-                .select('+password, +salt')
+                .select('+password +salt')
                 .populate('address')
                 .populate('cart.product')
         } catch {
@@ -64,8 +64,8 @@ class CustomerRepository {
             )
         }
     }
-    
-      async AddToCart(object) {
+
+    async AddToCart(object) {
         const { id, product, quantity } = object
         try {
             const customer = await Customer.findById(id).populate('cart.product')
@@ -94,8 +94,8 @@ class CustomerRepository {
             )
         }
     }
-    
-     async RemoveToCart(id, productId) {
+
+    async RemoveToCart(id, productId) {
         try {
             const customer = await Customer.findById(id)
             const cart = customer.cart
@@ -114,6 +114,15 @@ class CustomerRepository {
             console.log(e)
             throw new APIError('Api Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to remove item!')
         }
+    }
+    async ChangePassword(id, pass, salt) {
+        return await Customer.updateOne(
+            { _id: id },
+            {
+                password: pass,
+                salt,
+            }
+        )
     }
 }
 

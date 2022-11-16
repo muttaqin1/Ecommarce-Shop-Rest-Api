@@ -10,4 +10,5 @@ if (environment === 'development') expressMiddlewares.push(require('morgan')('de
 module.exports = {
     expressMiddlewares,
     Authentication: require('./Auth'),
+    roleAuth: require('./roleAuth'),
 }

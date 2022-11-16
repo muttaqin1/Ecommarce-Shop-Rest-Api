@@ -11,4 +11,4 @@ const Port = port || 8080
 app.listen(Port, host, () => {
     console.log(`server is running on port: ${port}`)
     connection()
-}).on('error', (e) => console.log(`server Error: ${e}`))
+}).on('error', (e) => console.log(e))

@@ -9,10 +9,11 @@ const NotFound = (req, res, next) => {
 const ErrorHandler = (err, req, res, next) => {
     if (res.headerSent) return next(err)
     console.log(err)
+    console.log('status code is ' + err.statusCode)
 
     const payload = {
         Success: false,
-        StatusCode: res.statusCode,
+        StatusCode: err.statusCode,
         Message: err.message,
     }
 
