@@ -7,6 +7,7 @@ const JWT = require('../helpers/Auth/JWT')
 const { sendOtp } = require('../helpers/sendMail')
 const signup = async (req, res, next) => {
     const { name, phone, email, password } = req.body
+
     try {
         const customer = await customerRepository.FindByEmail(email)
         if (customer) throw new BadRequestError('User already exist!')
@@ -124,8 +125,8 @@ const changePassword = async (req, res, next) => {
  * (2)the forgot password route will send a otpId and a message.(dont send the otpId to user).
  * (3)send the otpId on validateOtp route thrue params = http://example.com/validate-otp/otpId.
  * (4)the validate otp route will take the otp from the request body then validate the otp and send a otpId (again dont send the otpId to user).
- * (5)send the otpId on add-new-password route thrue params = http://example/com/add-new-password/otpId.
- * (6)the add new password route will change the password .
+ * (5)send the otpId on reset password  route thrue params = http://example/com/add-new-password/otpId.
+ * (6)the add new password and confirm password route will reset the password .
  * */
 
 const forgotPassword = async (req, res, next) => {
@@ -166,7 +167,7 @@ const validateOtp = async (req, res, next) => {
     }
 }
 
-const addNewPassword = async (req, res, next) => {
+const resetPassword = async (req, res, next) => {
     const { password } = req.body
     const otpDocId = req.params.otpId
     try {
@@ -177,12 +178,11 @@ const addNewPassword = async (req, res, next) => {
         const customer = await customerRepository.FindByEmail(otpDoc.holder)
         await customerRepository.ChangePassword(customer._id, password)
         await OtpRepository.Remove(otpDocId)
-        new ApiResponse(res).status(200).msg('password change successful!').send()
+        new ApiResponse(res).status(200).msg('password reset successful!').send()
     } catch (e) {
         next(e)
     }
 }
-
 module.exports = {
     signup,
     signin,
@@ -191,5 +191,5 @@ module.exports = {
     changePassword,
     forgotPassword,
     validateOtp,
-    addNewPassword,
+    resetPassword,
 }

@@ -35,7 +35,7 @@ const sendMail = ({ title, body, reciever }) =>
         }
     })
 
-const sendOtp = async (reciever) => {
+const sendOtp = async (reciever, reason) => {
     try {
         const user = await customerRepository.FindByEmail(reciever)
         if (!user) throw new BadRequestError('Customer is not registered')
@@ -45,10 +45,12 @@ const sendOtp = async (reciever) => {
         const title = `${otp} is your ${app_name} account recovery code.`
         const body = `Hi ${user.name},
                       We received a request to reset your ${app_name} password.
-                      Enter the following password reset code:
+                      Enter the following code reset your password:
                                   [ ${otp} ]  `
+
         const sendmail = await sendMail({ title, body, reciever })
-        if (!sendmail) throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR)
+        if (!sendmail)
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to send Email.')
         return otp
     } catch (e) {
         throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, e.message)

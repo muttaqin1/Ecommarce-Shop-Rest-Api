@@ -1,4 +1,3 @@
-const { environment } = require('../config')
 const { NotFoundError } = require('./AppError')
 
 const NotFound = (req, res, next) => {
@@ -17,7 +16,7 @@ const ErrorHandler = (err, req, res, next) => {
         Message: err.message,
     }
 
-    res.status(err.statusCode || 500).json(payload)
+    res.status(payload.StatusCode || 500).json(payload)
 }
 
 module.exports = [NotFound, ErrorHandler]

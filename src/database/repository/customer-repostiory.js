@@ -15,12 +15,11 @@ class CustomerRepository {
         }
     }
 
-    async FindById(id) {
+    async FindById(id, select = '+password +salt') {
         try {
             return await Customer.findById(id)
-                .select('+password +salt')
-                .populate('address')
-                .populate('cart.product')
+                .select(select)
+                .populate('cart.product wishlist address')
         } catch {
             throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Customer!')
         }
@@ -55,7 +54,7 @@ class CustomerRepository {
                 {
                     new: true,
                 }
-            )
+            ).populate('address')
         } catch {
             throw new APIError(
                 'API Error',
@@ -64,28 +63,63 @@ class CustomerRepository {
             )
         }
     }
-
-    async AddToCart(object) {
-        const { id, product, quantity } = object
+    async GetAllAddress(id) {
         try {
-            const customer = await Customer.findById(id).populate('cart.product')
-            const cart = customer.cart
-            if (cart.findIndex((cart) => cart.product._id.toString() === product.toString()) !== -1)
-                throw new Error('Product Already exist!')
+            return await this.FindById(id)
+        } catch (e) {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to get address!')
+        }
+    }
+
+    async GetSingleAddress(userId, addressId) {
+        try {
+            const { address } = await this.FindById(userId)
+            return await address.find((address) => address._id.toString() === addressId.toString())
+        } catch (e) {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to get address!')
+        }
+    }
+
+    async DeleteAddress(userId, address) {
+        try {
             return await Customer.findOneAndUpdate(
-                { _id: id },
+                { _id: userId },
                 {
-                    $push: {
-                        cart: {
-                            product,
-                            unit: quantity,
-                        },
+                    $pull: {
+                        address: address,
                     },
                 },
                 {
                     new: true,
                 }
+            ).populate('address')
+        } catch (e) {
+            throw new APIError(
+                'API ERROR',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Unable to delete address!'
             )
+        }
+    }
+
+    async AddToCart(object) {
+        const { id, product, quantity } = object
+        try {
+            const cartItem = {
+                product,
+                unit: quantity,
+            }
+            return await Customer.findOneAndUpdate(
+                { _id: id },
+                {
+                    $push: {
+                        cart: cartItem,
+                    },
+                },
+                {
+                    new: true,
+                }
+            ).populate('cart.product')
         } catch (e) {
             throw new APIError(
                 'Api Error',
@@ -97,21 +131,14 @@ class CustomerRepository {
 
     async RemoveToCart(id, productId) {
         try {
-            const customer = await Customer.findById(id)
+            const customer = await this.FindById(id)
             const cart = customer.cart
-            if (cart.findIndex((ProductId) => ProductId.toString() === productId.toString()) < 0)
-                throw new Error('product does not exist in cart!')
-            await Customer.findOneAndUpdate(
-                { _id: id },
-                {
-                    $pull: {
-                        cart: productId,
-                    },
-                },
-                { new: true }
+            const index = cart.findIndex(
+                (cart) => cart.product._id.toString() === productId.toString()
             )
+            cart.splice(index, 1)
+            return await customer.save()
         } catch (e) {
-            console.log(e)
             throw new APIError('Api Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to remove item!')
         }
     }
@@ -123,6 +150,79 @@ class CustomerRepository {
                 salt,
             }
         )
+    }
+    async ChangeName(userId, name) {
+        try {
+            return await Customer.findOneAndUpdate(
+                { _id: userId },
+                {
+                    name,
+                },
+                { new: true }
+            )
+        } catch (e) {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to change name!')
+        }
+    }
+    async ChangeAvatar(userId, avatar) {
+        try {
+            return await Customer.findOneAndUpdate(
+                { _id: userId },
+                {
+                    avatar,
+                }
+            )
+        } catch (e) {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to change Avatar!')
+        }
+    }
+    async AddToWishlist(userId, productId) {
+        try {
+            return await Customer.findOneAndUpdate(
+                { _id: userId },
+                {
+                    $push: {
+                        wishlist: productId,
+                    },
+                },
+                {
+                    new: true,
+                }
+            ).populate('wishlist')
+        } catch (e) {
+            throw new APIError(
+                'API ERROR',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Failed to add to wishlist!'
+            )
+        }
+    }
+    async RemoveToWishlist(userId, productId) {
+        try {
+            return await Customer.findOneAndUpdate(
+                { _id: userId },
+                {
+                    $pull: {
+                        wishlist: productId,
+                    },
+                }
+            ).populate('wishlist')
+        } catch (e) {
+            throw new APIError(
+                'API ERROR',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Failed to remove to wishlist!'
+            )
+        }
+    }
+
+    async GetWishlist(userId) {
+        try {
+            const { wishlist } = await this.FindById(userId)
+            return wishlist
+        } catch (e) {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to get wishlist!')
+        }
     }
 }
 

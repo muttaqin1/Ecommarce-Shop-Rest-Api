@@ -14,9 +14,10 @@ const customerSchema = new Schema(
             type: String,
             required: true,
         },
+        emailVerified: Boolean,
         avatar: {
-            url: { type: String, required: true, trim: true },
-            publicId: { type: String, required: true, trim: true },
+            url: { type: String, trim: true },
+            publicId: { type: String, trim: true },
         },
         password: {
             type: String,

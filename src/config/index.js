@@ -11,8 +11,8 @@ module.exports = {
     jwt: {
         tokenIssuer: process.env.TOKEN_ISSUER,
         tokenAudience: process.env.TOKEN_AUDIENCE,
-        accessTokenValidityDays: process.env.ACCESS_TOKEN_VALIDITY_SEC || '10min',
-        refreshTokenValidityDays: process.env.REFRESH_TOKEN_VALIDITY_SEC || '30d',
+        accessTokenValidityDays: process.env.ACCESS_TOKEN_VALIDITY_DAYS || '10min',
+        refreshTokenValidityDays: process.env.REFRESH_TOKEN_VALIDITY_DAYS || '30d',
     },
     Nodemailer: {
         SMTP_EMAIL: process.env.SMTP_EMAIL,

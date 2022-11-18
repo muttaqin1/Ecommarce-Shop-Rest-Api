@@ -6,6 +6,7 @@ const src = {
     HEADER: 'headers',
     QUERY: 'query',
     PARAM: 'params',
+    IMAGE: 'image',
 }
 
 const joiAuthBearer = () =>
@@ -23,7 +24,7 @@ const validator =
             if (!error) return next()
             console.log(error)
             const { details } = error
-            const message = details.map((i) => i.message.replace(/['"]+/g, '')).join(',')
+            const message = details.map((i) => i.message.replace(/['"\]\[]+/g, '')).join(',')
             next(new BadRequestError(message))
         } catch (e) {
             next(e)

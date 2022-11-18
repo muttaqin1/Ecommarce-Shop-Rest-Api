@@ -13,6 +13,9 @@ module.exports = {
         email: joiEmail.required(),
         password: joi.string().min(8).max(100).required(),
     }),
+    refreshToken: joi.object({
+        refreshToken: joiAuthBearer().required(),
+    }),
     otp: {
         checkEmail: joi.object({
             email: joiEmail.required(),
