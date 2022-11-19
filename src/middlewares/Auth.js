@@ -24,7 +24,7 @@ const authentication = async (req, res, next) => {
 
         return next()
     } catch (error) {
-        new ApiResponse(res).status(403).msg(error.message).send()
+        next(error)
     }
 }
 

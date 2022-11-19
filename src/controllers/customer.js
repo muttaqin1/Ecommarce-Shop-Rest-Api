@@ -1,6 +1,7 @@
-const { CustomerRepository } = require('../database')
+const { CustomerRepository, SellerRepository } = require('../database')
 const ApiResponse = require('../helpers/ApiResponse')
 const customerRepository = new CustomerRepository()
+const sellerRepository = new SellerRepository()
 const { BadRequestError } = require('../helpers/AppError')
 
 const addNewAddress = async (req, res, next) => {
@@ -143,6 +144,21 @@ const getWishlist = async (req, res, next) => {
         next(e)
     }
 }
+const sellerAccountRequest = async (req, res, next) => {
+    const { _id } = req.user
+    const data = {
+        ...req.body,
+        customerId: _id,
+    }
+    try {
+        if (!req.image) throw new BadRequestError('company logo is required!')
+        data.companyLogo = req.image
+        const sellerProfile = await sellerRepository.Create(data)
+        new ApiResponse(res).status(200).data({ sellerProfile }).send()
+    } catch (e) {
+        next(e)
+    }
+}
 module.exports = {
     addNewAddress,
     getProfile,
@@ -156,4 +172,5 @@ module.exports = {
     addToWishlist,
     removeToWishlist,
     changeAvatar,
+    sellerAccountRequest,
 }

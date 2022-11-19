@@ -27,4 +27,11 @@ module.exports = {
         url: joi.string().required(),
         publicId: joi.string().required(),
     }),
+    sellerRequest: joi.object({
+        companyName: joi.string().min(3).max(40).required(),
+        description: joi.string().min(20).max(200).required(),
+        city: joi.string().min(2).max(22).required(),
+        country: joi.string().min(2).max(22).required(),
+        email: joi.string().email().required(),
+    }),
 }

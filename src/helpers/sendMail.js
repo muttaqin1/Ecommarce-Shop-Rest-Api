@@ -35,7 +35,18 @@ const sendMail = ({ title, body, reciever }) =>
         }
     })
 
-const sendOtp = async (reciever, reason) => {
+const MailBody = {
+    acceptSellerReq: (recieverName, recieverEmail) => {
+        return {
+            title: 'Congratulations! your seller request has been approved.',
+            body: `hi ${recieverName},
+          You have unlocked the seller mode of your profile. Now you can showcase your products to sell them.`,
+            reciever: recieverEmail,
+        }
+    },
+}
+
+const sendOtp = async (reciever) => {
     try {
         const user = await customerRepository.FindByEmail(reciever)
         if (!user) throw new BadRequestError('Customer is not registered')
@@ -60,4 +71,5 @@ const sendOtp = async (reciever, reason) => {
 module.exports = {
     sendMail,
     sendOtp,
+    MailBody,
 }

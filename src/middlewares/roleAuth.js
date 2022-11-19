@@ -8,7 +8,7 @@ const verifyRole = (acceptedRole) => async (req, res, next) => {
         if (req.user.role !== acceptedRole) throw new UnauthorizationError('Permission denied')
         return next()
     } catch (e) {
-        new ApiResponse(res).status(200).msg(e.message).send()
+        next(new UnauthorizationError('Permission denied!'))
     }
 }
 

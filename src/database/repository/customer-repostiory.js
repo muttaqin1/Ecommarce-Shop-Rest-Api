@@ -19,9 +19,16 @@ class CustomerRepository {
         try {
             return await Customer.findById(id)
                 .select(select)
-                .populate('cart.product wishlist address')
+                .populate('cart.product wishlist address sellerAccount')
         } catch {
             throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Customer!')
+        }
+    }
+    async FindBySellerId(sellerId) {
+        try {
+            return await Customer.findOne({ sellerAccount: sellerId })
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to find Customer!')
         }
     }
     async FindByEmail(email) {

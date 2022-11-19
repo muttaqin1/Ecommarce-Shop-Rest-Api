@@ -27,7 +27,7 @@ class JWT {
             return await promisify(verify)(token, cert)
         } catch (e) {
             if (e && e.name === 'TokenExpiredError') throw new TokenExpiredError()
-            throw new BadTokenError()
+            throw new BadTokenError('Invalid token')
         }
     }
 

@@ -14,6 +14,7 @@ const {
         addToWishlist,
         removeToWishlist,
         changeAvatar,
+        sellerAccountRequest,
     },
 } = require('../controllers')
 const { Authentication } = require('../middlewares')
@@ -25,6 +26,7 @@ const {
     RemoveToCart,
     validateProduct,
     validateImage,
+    sellerRequest,
 } = require('./schemas/customerSchema')
 const imageUpload = require('../helpers/fileUpload/imageUpload')
 const { validator, src } = require('../helpers/validators')
@@ -36,8 +38,8 @@ router.delete(
     validator(removeAddress, src.PARAM),
     deleteAddress
 )
-router.patch('/customer/profile/change-name', Authentication, validator(changename), changeName)
-router.patch(
+router.put('/customer/profile/change-name', Authentication, validator(changename), changeName)
+router.put(
     '/customer/profile/change-avatar',
     Authentication,
     imageUpload('avatar', 'avatars'),
@@ -68,4 +70,12 @@ router.delete(
     removeToWishlist
 )
 router.get('/customer/wishlist', Authentication, getWishlist)
+router.post(
+    '/customer/seller-account',
+    Authentication,
+    imageUpload('companylogo', 'companylogos'),
+    validator(sellerRequest),
+    validator(validateImage, src.IMAGE),
+    sellerAccountRequest
+)
 module.exports = router

@@ -58,7 +58,7 @@ class NotFoundError extends AppError {
 
 class UnauthorizationError extends AppError {
     constructor(description = 'Unauthorized!') {
-        super('Unauthorization Error', STATUS_CODES.UN_AUTHORISED, description, true)
+        super('UnauthorizationError', STATUS_CODES.UN_AUTHORISED, description, true)
     }
 }
 

@@ -51,6 +51,12 @@ const customerSchema = new Schema(
             },
         ],
         orders: [{ type: Schema.Types.ObjectId, ref: 'Order', required: true }],
+        seller: { type: Boolean, default: false },
+        sellerAccount: {
+            type: Schema.Types.ObjectId,
+            ref: 'SellerProfile',
+            required: true,
+        },
     },
     {
         timestamps: true,

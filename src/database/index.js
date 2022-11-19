@@ -4,4 +4,5 @@ module.exports = {
     CustomerRepository: require('./repository/customer-repostiory'),
     KeystoreRepository: require('./repository/keystore-repository'),
     OtpRepository: require('./repository/otp-repository'),
+    SellerRepository: require('./repository/seller-repository'),
 }
