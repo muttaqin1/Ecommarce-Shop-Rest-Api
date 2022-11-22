@@ -4,7 +4,14 @@ const Customer = require('../models/Customer')
 class SellerRepostiory {
     async Create(object) {
         try {
-            return await SellerProfile.create(object)
+            const sellerProfile = await SellerProfile.create(object)
+            await Customer.updateOne(
+                {
+                    _id: object.customerId,
+                },
+                { sellerAccount: sellerProfile._id }
+            )
+            return sellerProfile
         } catch {
             throw new APIError(
                 'API ERROR',
@@ -86,8 +93,8 @@ class SellerRepostiory {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to remove seller!')
         }
     }
-    async AddProducts(sellerId, productId) {
-        await SellerProfile.updateOne(
+    async AddProduct(sellerId, productId) {
+        const data = await SellerProfile.updateOne(
             { _id: sellerId },
             {
                 $push: {
@@ -95,6 +102,7 @@ class SellerRepostiory {
                 },
             }
         )
+        console.log(data)
     }
 }
 module.exports = SellerRepostiory

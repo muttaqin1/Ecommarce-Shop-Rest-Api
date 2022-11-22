@@ -1,6 +1,6 @@
 module.exports = {
     app_name: process.env.APP_NAME,
-    environment: process.env.NODE_ENV,
+    currentEnvironment: process.env.NODE_ENV,
     server: {
         port: process.env.PORT,
         host: process.env.HOST,

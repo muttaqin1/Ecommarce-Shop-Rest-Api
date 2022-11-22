@@ -6,7 +6,6 @@ const customerRepository = new CustomerRepository()
 const AuthUtils = require('../helpers/Auth/AuthUtils')
 const { BadTokenError, UnauthorizationError } = require('../helpers/AppError')
 const JWT = require('../helpers/Auth/JWT')
-const ApiResponse = require('../helpers/ApiResponse')
 const authentication = async (req, res, next) => {
     try {
         req.accessToken = await AuthUtils.getAccessToken(req.headers.authorization)

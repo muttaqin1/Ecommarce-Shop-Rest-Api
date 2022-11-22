@@ -6,7 +6,8 @@ class CustomerRepository {
     async Create(object) {
         try {
             return await Customer.create(object)
-        } catch {
+        } catch (e) {
+            console.log(e)
             throw new APIError(
                 'API Error',
                 STATUS_CODES.INTERNAL_ERROR,
@@ -19,8 +20,8 @@ class CustomerRepository {
         try {
             return await Customer.findById(id)
                 .select(select)
-                .populate('cart.product wishlist address sellerAccount')
-        } catch {
+                .populate('cart.product wishlist address')
+        } catch (e) {
             throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Customer!')
         }
     }

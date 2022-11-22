@@ -1,32 +1,47 @@
 const { ProductRepository, SellerRepository } = require('../database')
-const { CreateProduct, DeleteProduct } = new ProductRepository()
+const { CreateProduct, DeleteProduct, UpdateProduct, FindById } = new ProductRepository()
+const ApiResponse = require('../helpers/ApiResponse')
+const { BadRequestError } = require('../helpers/AppError')
 const sellerRepository = new SellerRepository()
+const {
+    uploader: { destroy },
+} = require('../helpers/fileUpload/cloudinary')
+
 const createProduct = async (req, res, next) => {
-    const {
-        sellerAccount: { _id },
-    } = req.user
-    console.log(req.user)
+    const { sellerAccount } = req.user
     const { name, description, type, unit, price } = req.body
     try {
         const data = {
             name,
-            desc: description,
+            description,
             type,
             unit,
             price,
-            suplier: _id,
+            suplier: sellerAccount,
         }
-        if (req.image) data.banner = req.image
+        if (!req.image) throw new BadRequestError('Product image is required!')
+        data.banner = req.image
         const product = await CreateProduct(data)
-        await sellerRepository.AddProducts(_id, product)
+        await sellerRepository.AddProduct(sellerAccount, product)
         new ApiResponse(res).status(200).data({ product }).send()
     } catch (e) {
         next(e)
     }
 }
 const updateProduct = async (req, res, next) => {
-    const { name, description, type, unit, price, available } = req.body
+    const { productId } = req.params
+    const updateItems = req.body
     try {
+        if (!req.image) throw new BadRequestError('Product image is required!')
+        updateItems.banner = req.image
+
+        const product = await FindById(productId)
+        console.log(product)
+        if (!product) throw new BadRequestError('No product found!')
+        await destroy(product.banner.publicId) //destroying the current product banner
+        const updatedProduct = await UpdateProduct(productId, updateItems)
+        console.log(updatedProduct)
+        new ApiResponse(res).status(200).data({ updatedProduct }).send()
     } catch (e) {
         next(e)
     }
@@ -44,4 +59,5 @@ const deleteProduct = async (req, res, next) => {
 module.exports = {
     createProduct,
     deleteProduct,
+    updateProduct,
 }

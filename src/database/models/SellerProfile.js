@@ -6,7 +6,7 @@ const sellerSchema = new Schema(
         description: { type: String, required: true, trim: true },
         city: { type: String, required: true, trim: true },
         country: { type: String, required: true, trim: true },
-        email: { type: String, required: true },
+        email: { type: String, required: true, lowercase: true },
         customerId: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
         companyLogo: {
             url: { type: String, required: true },

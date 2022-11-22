@@ -9,13 +9,15 @@ const ErrorHandler = (err, req, res, next) => {
     if (res.headerSent) return next(err)
     console.log(err)
     console.log('status code is ' + err.statusCode)
-
     const payload = {
         Success: false,
         StatusCode: err.statusCode,
-        Message: err.message,
+        Message: err.message || 'Something went wrong!',
     }
-
+    if (err instanceof TypeError) {
+        payload.Message = 'Something went wrong!'
+        payload.StatusCode = 500
+    }
     res.status(payload.StatusCode || 500).json(payload)
 }
 

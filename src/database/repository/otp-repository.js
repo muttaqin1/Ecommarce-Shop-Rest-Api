@@ -14,24 +14,40 @@ class OtpRepository {
     }
 
     static async Find(id) {
-        return await Otp.findById(id)
+        try {
+            return await Otp.findById(id)
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find otp!')
+        }
     }
     static async FindByEmail(email) {
-        return await Otp.findOne({ holder: email })
+        try {
+            return await Otp.findOne({ holder: email })
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find otp!')
+        }
     }
     static async Verify(id, bool) {
-        return await Otp.findOneAndUpdate(
-            { _id: id },
-            {
-                verified: bool,
-            },
-            {
-                new: true,
-            }
-        )
+        try {
+            return await Otp.findOneAndUpdate(
+                { _id: id },
+                {
+                    verified: bool,
+                },
+                {
+                    new: true,
+                }
+            )
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to verify otp!')
+        }
     }
     static async Remove(id) {
-        return await Otp.findByIdAndDelete(id)
+        try {
+            return await Otp.findByIdAndDelete(id)
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to remove otp!')
+        }
     }
 }
 

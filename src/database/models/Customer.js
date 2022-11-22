@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose')
-
 const customerSchema = new Schema(
     {
         name: {
@@ -13,6 +12,7 @@ const customerSchema = new Schema(
         email: {
             type: String,
             required: true,
+            lowercase: true,
         },
         emailVerified: Boolean,
         avatar: {
@@ -55,11 +55,19 @@ const customerSchema = new Schema(
         sellerAccount: {
             type: Schema.Types.ObjectId,
             ref: 'SellerProfile',
-            required: true,
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+            select: false,
+        },
+        updatedAt: {
+            type: Date,
+            default: Date.now,
+            select: false,
         },
     },
     {
-        timestamps: true,
         versionKey: false,
     }
 )

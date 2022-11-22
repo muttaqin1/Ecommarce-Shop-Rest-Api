@@ -6,14 +6,15 @@
  */
 
 const multer = require('./multer')
-const cloudinary = require('./cloudinary')
+const {
+    uploader: { upload },
+} = require('./cloudinary')
 
 const imageUpload = (folderName) => async (req, res, next) => {
     if (req.file) {
-        const result = await cloudinary.uploader.upload(req.file.path, {
+        const { secure_url, public_id } = await upload(req.file.path, {
             folder: folderName,
         })
-        const { secure_url, public_id } = result
         req.image = {
             url: secure_url,
             publicId: public_id,
