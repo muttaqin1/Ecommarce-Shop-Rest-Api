@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose')
+const SellerProfile = require('./SellerProfile')
 const customerSchema = new Schema(
     {
         name: {
@@ -54,7 +55,7 @@ const customerSchema = new Schema(
         seller: { type: Boolean, default: false },
         sellerAccount: {
             type: Schema.Types.ObjectId,
-            ref: 'SellerProfile',
+            ref: 'Seller',
         },
         createdAt: {
             type: Date,

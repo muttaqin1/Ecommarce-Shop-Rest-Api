@@ -17,12 +17,12 @@ const createProduct = async (req, res, next) => {
             type,
             unit,
             price,
-            suplier: sellerAccount,
+            supplier: sellerAccount._id,
         }
         if (!req.image) throw new BadRequestError('Product image is required!')
         data.banner = req.image
         const product = await CreateProduct(data)
-        await sellerRepository.AddProduct(sellerAccount, product)
+        await sellerRepository.AddProduct(sellerAccount._id, product)
         new ApiResponse(res).status(200).data({ product }).send()
     } catch (e) {
         next(e)
@@ -30,26 +30,33 @@ const createProduct = async (req, res, next) => {
 }
 const updateProduct = async (req, res, next) => {
     const { productId } = req.params
+    const { sellerAccount } = req.user
     const updateItems = req.body
     try {
-        if (!req.image) throw new BadRequestError('Product image is required!')
-        updateItems.banner = req.image
+        if (req.image) updateItems.banner = req.image
 
         const product = await FindById(productId)
-        console.log(product)
-        if (!product) throw new BadRequestError('No product found!')
+        console.log(sellerAccount)
+        if (!product || product.supplier._id.toString() !== sellerAccount._id.toString())
+            throw new BadRequestError('Only seller can update their existing product.')
+
         await destroy(product.banner.publicId) //destroying the current product banner
         const updatedProduct = await UpdateProduct(productId, updateItems)
-        console.log(updatedProduct)
         new ApiResponse(res).status(200).data({ updatedProduct }).send()
     } catch (e) {
         next(e)
     }
 }
 const deleteProduct = async (req, res, next) => {
-    const { id } = req.params
+    const { productId } = req.params
+    const { sellerAccount } = req.user
     try {
-        await DeleteProduct(id)
+        const product = await FindById(productId)
+        if (!product || product.supplier._id.toString() !== sellerAccount._id.toString())
+            throw new BadRequestError('Only seller can delete their existing product.')
+        await destroy(product.banner.publicId) //destroying the product image
+        await DeleteProduct(productId)
+        await sellerRepository.RemoveProduct(sellerAccount._id, productId)
         new ApiResponse(res).status(200).msg('Product Deleted!').send()
     } catch (e) {
         next(e)

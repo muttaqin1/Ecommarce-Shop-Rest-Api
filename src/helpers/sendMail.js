@@ -30,7 +30,7 @@ const sendMail = ({ title, body, reciever }) =>
             } = await transporter.sendMail(mailOptions)
             if (to.indexOf(reciever) === -1) throw new Error('')
             resolve(true)
-        } catch (e) {
+        } catch {
             reject(new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to send Email!'))
         }
     })
@@ -39,8 +39,17 @@ const MailBody = {
     acceptSellerReq: (recieverName, recieverEmail) => {
         return {
             title: 'Congratulations! your seller request has been approved.',
-            body: `hi ${recieverName},
+            body: `Hi ${recieverName},
           You have unlocked the seller mode of your profile. Now you can showcase your products to sell them.`,
+            reciever: recieverEmail,
+        }
+    },
+
+    rejectSellerReq: (recieverName, recieverEmail) => {
+        return {
+            title: 'your seller request has been rejected!.',
+            body: `Hi ${recieverName},
+          your seller account request doesn\'t match our requirements.So we have decided to reject your seller account request .`,
             reciever: recieverEmail,
         }
     },

@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose')
-
+const SellerProfile = require('./SellerProfile')
 const productSchema = new Schema(
     {
         name: {
@@ -30,8 +30,9 @@ const productSchema = new Schema(
             type: Boolean,
             default: true,
         },
-        suplier: {
+        supplier: {
             type: Schema.Types.ObjectId,
+            ref: 'Seller',
             required: true,
         },
         reviews: [

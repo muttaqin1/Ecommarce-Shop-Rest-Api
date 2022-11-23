@@ -15,4 +15,7 @@ module.exports = {
         type: joi.string().max(22),
         unit: joi.number(),
     }),
+    checkProductId: joi.object({
+        productId: joi.string().required(),
+    }),
 }

@@ -18,10 +18,12 @@ class CustomerRepository {
 
     async FindById(id, select = '+password +salt') {
         try {
-            return await Customer.findById(id)
-                .select(select)
-                .populate('cart.product wishlist address')
+            const customer = await Customer.findById(id)
+            let populateString = 'cart.product wishlist address'
+            if (customer.sellerAccount._id) populateString += ' sellerAccount'
+            return await Customer.findById(id).select(select).populate(populateString)
         } catch (e) {
+            console.log(e)
             throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Customer!')
         }
     }

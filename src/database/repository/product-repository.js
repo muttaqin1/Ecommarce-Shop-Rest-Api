@@ -24,7 +24,7 @@ class ProductRepository {
 
     async FindById(id) {
         try {
-            return await Product.findById(id)
+            return await Product.findById(id).populate('supplier')
         } catch {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Product!')
         }

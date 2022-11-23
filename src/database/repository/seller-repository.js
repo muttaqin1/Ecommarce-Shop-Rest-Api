@@ -77,6 +77,26 @@ class SellerRepostiory {
             )
         }
     }
+    async RejectSellerRequest(sellerId) {
+        try {
+            await Customer.updateOne(
+                { sellerAccount: sellerId },
+                {
+                    $unset: {
+                        sellerAccount: 1,
+                    },
+                }
+            )
+
+            return await SellerProfile.findOneAndDelete({ _id: sellerId })
+        } catch {
+            throw new APIError(
+                'API ERROR',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Unable to reject seller request!'
+            )
+        }
+    }
     async RemoveSeller(sellerId) {
         try {
             await Customer.updateOne(
@@ -94,7 +114,7 @@ class SellerRepostiory {
         }
     }
     async AddProduct(sellerId, productId) {
-        const data = await SellerProfile.updateOne(
+        await SellerProfile.updateOne(
             { _id: sellerId },
             {
                 $push: {
@@ -102,7 +122,16 @@ class SellerRepostiory {
                 },
             }
         )
-        console.log(data)
+    }
+    async RemoveProduct(sellerId, productId) {
+        await SellerProfile.updateOne(
+            { _id: sellerId },
+            {
+                $pull: {
+                    products: productId,
+                },
+            }
+        )
     }
 }
 module.exports = SellerRepostiory

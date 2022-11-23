@@ -6,7 +6,7 @@ const {
     Authentication,
     roleAuth: { roles, verifyRole },
 } = require('../middlewares')
-const { CreateProduct, UpdateProduct } = require('./schemas/sellerSchema')
+const { CreateProduct, UpdateProduct, checkProductId } = require('./schemas/sellerSchema')
 const { validator, src } = require('../helpers/validators')
 const imageUploader = require('../helpers/fileUpload/imageUpload')
 
@@ -24,7 +24,14 @@ router.put(
     verifyRole(roles.seller),
     imageUploader('banner', 'banners'),
     validator(UpdateProduct),
+    validator(checkProductId, src.PARAM),
     updateProduct
 )
-
+router.delete(
+    '/products/:productId',
+    Authentication,
+    verifyRole(roles.seller),
+    validator(checkProductId, src.PARAM),
+    deleteProduct
+)
 module.exports = router
