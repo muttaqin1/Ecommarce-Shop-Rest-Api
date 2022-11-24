@@ -1,6 +1,10 @@
 const SellerProfile = require('../models/SellerProfile')
 const { STATUS_CODES, APIError } = require('../../helpers/AppError')
 const Customer = require('../models/Customer')
+const Product = require('../models/Product')
+const {
+    uploader: { destroy },
+} = require('../../helpers/fileUpload/cloudinary')
 class SellerRepostiory {
     async Create(object) {
         try {
@@ -20,7 +24,7 @@ class SellerRepostiory {
             )
         }
     }
-    async PendingSellerRequests() {
+    async Sellers() {
         try {
             return await SellerProfile.find({ sellerVerified: true }).populate('products')
         } catch {
@@ -31,18 +35,15 @@ class SellerRepostiory {
             )
         }
     }
-    async GetSellerRequest() {
+    async GetSellerRequests() {
         try {
-            return await SellerRepostiory.find({ sellerVerified: false })
+            return await SellerProfile.find({ sellerVerified: false })
         } catch {
-            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR)
-        }
-    }
-    async RejectSellerRequest(requestId) {
-        try {
-            return await SellerProfile.deleteOne({ _id: requestId })
-        } catch {
-            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to reject seller!')
+            throw new APIError(
+                'API ERROR',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Unable to get seller requests.'
+            )
         }
     }
     async FindById(sellerId) {
@@ -50,6 +51,13 @@ class SellerRepostiory {
             return await SellerProfile.findById(sellerId).populate('customerId')
         } catch {
             new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to find seller!')
+        }
+    }
+    async FindByCustomerId(customerId) {
+        try {
+            return await SellerProfile.findOne({ customerId: customerId })
+        } catch (e) {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, e.message)
         }
     }
     async AcceptSellerRequest(sellerId) {
@@ -88,7 +96,7 @@ class SellerRepostiory {
                 }
             )
 
-            return await SellerProfile.findOneAndDelete({ _id: sellerId })
+            return await SellerProfile.findOneAndDelete({ _id: sellerId }, { new: true })
         } catch {
             throw new APIError(
                 'API ERROR',
@@ -99,16 +107,27 @@ class SellerRepostiory {
     }
     async RemoveSeller(sellerId) {
         try {
+            const products = await Product.find({ supplier: sellerId })
+            products.forEach(async ({ _id, banner: { publicId } }) => {
+                await destroy(publicId)
+                await Product.deleteOne({ _id })
+            })
+
             await Customer.updateOne(
                 { sellerAccount: sellerId },
                 {
                     seller: false,
                     role: 'CUSTOMER',
+                    $unset: {
+                        sellerAccount: 1,
+                    },
                 }
             )
 
-            await SellerProfile.deleteOne({ _id: sellerId })
-            return true
+            const {
+                companyLogo: { publicId },
+            } = await SellerProfile.findOneAndDelete({ _id: sellerId }, { new: true })
+            await destroy(publicId)
         } catch {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to remove seller!')
         }

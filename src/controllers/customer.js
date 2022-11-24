@@ -151,6 +151,13 @@ const sellerAccountRequest = async (req, res, next) => {
         customerId: _id,
     }
     try {
+        const existingRequest = await sellerRepository.FindByCustomerId(_id)
+        if (existingRequest && existingRequest.sellerVerified)
+            throw new BadRequestError('You are already a seller!')
+
+        if (existingRequest && existingRequest.sellerVerified)
+            throw new BadRequestError('Your seller request is still pending!')
+
         if (!req.image) throw new BadRequestError('company logo is required!')
         data.companyLogo = req.image
         const sellerProfile = await sellerRepository.Create(data)

@@ -20,7 +20,7 @@ class CustomerRepository {
         try {
             const customer = await Customer.findById(id)
             let populateString = 'cart.product wishlist address'
-            if (customer.sellerAccount._id) populateString += ' sellerAccount'
+            if (customer.sellerAccount?._id && customer.seller) populateString += ' sellerAccount'
             return await Customer.findById(id).select(select).populate(populateString)
         } catch (e) {
             console.log(e)

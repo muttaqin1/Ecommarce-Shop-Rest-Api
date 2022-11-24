@@ -13,7 +13,7 @@ const sellerSchema = new Schema(
             publicId: { type: String, required: true },
         },
         sellerVerified: { type: Boolean, default: false },
-        products: [{ type: Schema.Types.ObjectId, ref: 'Products' }],
+        products: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
         companyReviews: [
             {
                 rating: Number,
