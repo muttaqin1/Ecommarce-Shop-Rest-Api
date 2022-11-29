@@ -1,0 +1,25 @@
+http://localhost:4000
+-i
+
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3N1ZXIiOiJleGFtcGxlLmNvbSIsImF1ZGllbmNlIjoiZXhhbXBsZS5jb20iLCJjdXN0b21lciI6IjYzODM1ZDYzNjlhYzc3YjM4YWRlZDdkNSIsInByaW1hcnlLZXkiOiIzZDU5MmVmM2M0OTljMTEyNDE1OWFjYTUwNjQ0YzA4MTc4MGQzMTllMDc5ZDNjZGU1NmFiMGVlMjZkNzBjNGNjY2MxOWJjNThjZTZiMWEwYjA2ZTE5MTk1YzFhOGJjYmUwNjczMWM1ZmEyYzhhMjRiYjBiNDdiODQxOTAyM2FjYiIsImlhdCI6MTY2OTU1MzUwNywiZXhwIjoxNjcwNDE3NTA3fQ.JpTaKnZHS3qiD5_TY4MBnc08XOdyiVfyVrm6Mm9kqdxcT_PWOM77PWyACTtzdX2NKUu3elytXlnQiB-bVMJKvmm9vj4-fhmR0wc-8pwX6iFDrzRrmw3ttHQMFlA4KdkgPzJ54EfN4Z_zAgdYugSKof-_6fOBn__1Aa3J-zPANZSlt0RBu-NGDHXHO3oxGQ_LWn2uZAxuzLRcQ_cjKzVHqhgy4Gj4K_2ZxvJlsS7B7LSCS270vRyv-58cPeGZcsZfBhS6VnC_-gWOyo50bQAcfipSjDycmSKgyVHCZgYds6JmDx3g-DmZCQ5AU3JmmSyKOlGdFb930ZJ1yiCQTPX_FxnOaSQZrqaEEOr3kMFFF6sCfiOl9nqzyxd1RNB8yxU5LULNcCwtxMcSyhFSlKssgqakgStiFDRGS2qIO2UEujwNLA4-KthJV1kyJaJMbTu8Ejq6HQdjAFzyVfAlFfXgPYuODRZzUhFDzPUKAAN0BLlM3LDhC3XlfdINk4MuMI6D
+
+--
+
+--
+--
+GET /api/customer/order
+--
+POST /api/order
+{
+
+"products":[
+{"productId":"6383b1d9d1dd06efbcc5fe80", "quantity":1},
+{"productId":"6383b1e6d1dd06efbcc5fe84", "quantity":1},
+{"productId":"6383b1eed1dd06efbcc5fe88", "quantity":1}
+],
+"address":"6384bcb30157652781c28f85"
+}
+--
+DELETE /api/order/638619abd2dee1fbe8ed4def"
+

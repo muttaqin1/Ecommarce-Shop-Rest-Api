@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose')
-const SellerProfile = require('./SellerProfile')
 const customerSchema = new Schema(
     {
         name: {
@@ -30,11 +29,7 @@ const customerSchema = new Schema(
             required: true,
             select: false,
         },
-        role: {
-            type: String,
-            enum: ['ADMIN', 'CUSTOMER', 'SELLER'],
-            default: 'CUSTOMER',
-        },
+        roles: [{ type: Number }],
 
         address: [{ type: Schema.Types.ObjectId, ref: 'Address', require: true }],
 
@@ -52,11 +47,6 @@ const customerSchema = new Schema(
             },
         ],
         orders: [{ type: Schema.Types.ObjectId, ref: 'Order', required: true }],
-        seller: { type: Boolean, default: false },
-        sellerAccount: {
-            type: Schema.Types.ObjectId,
-            ref: 'Seller',
-        },
         createdAt: {
             type: Date,
             default: Date.now,

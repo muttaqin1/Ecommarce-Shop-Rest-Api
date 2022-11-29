@@ -7,7 +7,6 @@ class CustomerRepository {
         try {
             return await Customer.create(object)
         } catch (e) {
-            console.log(e)
             throw new APIError(
                 'API Error',
                 STATUS_CODES.INTERNAL_ERROR,
@@ -18,20 +17,9 @@ class CustomerRepository {
 
     async FindById(id, select = '+password +salt') {
         try {
-            const customer = await Customer.findById(id)
-            let populateString = 'cart.product wishlist address'
-            if (customer.sellerAccount?._id && customer.seller) populateString += ' sellerAccount'
-            return await Customer.findById(id).select(select).populate(populateString)
-        } catch (e) {
-            console.log(e)
-            throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Customer!')
-        }
-    }
-    async FindBySellerId(sellerId) {
-        try {
-            return await Customer.findOne({ sellerAccount: sellerId })
+            return await Customer.findById(id).select(select)
         } catch {
-            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to find Customer!')
+            throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Customer!')
         }
     }
     async FindByEmail(email) {
@@ -232,6 +220,42 @@ class CustomerRepository {
             return wishlist
         } catch (e) {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to get wishlist!')
+        }
+    }
+    async AddOrder(customerId, orderId) {
+        try {
+            await Customer.updateOne(
+                { _id: customerId },
+                {
+                    $push: {
+                        orders: orderId,
+                    },
+                }
+            )
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to add order')
+        }
+    }
+    async RemoveOrder(customerId, orderId) {
+        try {
+            await Customer.updateOne(
+                { _id: customerId },
+                {
+                    $pull: {
+                        orders: orderId,
+                    },
+                }
+            )
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to remove order')
+        }
+    }
+    async GetOrders(customerId) {
+        try {
+            const customer = await Customer.findById(customerId).populate('orders')
+            return customer.orders
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to get orders!')
         }
     }
 }

@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose')
-const SellerProfile = require('./SellerProfile')
 const productSchema = new Schema(
     {
         name: {
@@ -31,8 +30,7 @@ const productSchema = new Schema(
             default: true,
         },
         supplier: {
-            type: Schema.Types.ObjectId,
-            ref: 'Seller',
+            type: String,
             required: true,
         },
         reviews: [

@@ -4,7 +4,14 @@ const { CustomerRepository, KeystoreRepository, OtpRepository } = require('../da
 const AuthUtils = require('../helpers/Auth/AuthUtils')
 const customerRepository = new CustomerRepository()
 const JWT = require('../helpers/Auth/JWT')
+const {
+    roleAuth: { roles },
+} = require('../middlewares')
 const { sendOtp } = require('../helpers/sendMail')
+const {
+    jwt: { refreshTokenCookieExpiry },
+} = require('../config')
+
 const signup = async (req, res, next) => {
     const { name, phone, email, password } = req.body
 
@@ -18,6 +25,7 @@ const signup = async (req, res, next) => {
             name,
             phone,
             email,
+            roles: [roles.Customer],
             password: hashedPassword,
             salt,
         }
@@ -29,7 +37,12 @@ const signup = async (req, res, next) => {
             keystore.primaryKey,
             keystore.secondaryKey
         )
-        new ApiResponse(res).status(200).data({ createdCustomer, accessToken, refreshToken }).send()
+
+        new ApiResponse(res)
+            .sendCookie('REFRESH_TOKEN', Number(refreshTokenCookieExpiry), refreshToken)
+            .status(200)
+            .data({ createdCustomer, accessToken })
+            .send()
     } catch (e) {
         next(e)
     }
@@ -53,7 +66,11 @@ const signin = async (req, res, next) => {
             keystore.secondaryKey
         )
 
-        new ApiResponse(res).status(200).data({ accessToken, refreshToken }).send()
+        new ApiResponse(res)
+            .sendCookie('REFRESH_TOKEN', Number(refreshTokenCookieExpiry), refreshToken)
+            .status(200)
+            .data({ accessToken })
+            .send()
     } catch (e) {
         next(e)
     }
@@ -61,7 +78,11 @@ const signin = async (req, res, next) => {
 const signout = async (req, res, next) => {
     try {
         await KeystoreRepository.Remove(req.keystore._id)
-        new ApiResponse(res).status(200).msg('Signout successful!').send()
+        new ApiResponse(res)
+            .removeCookie('REFRESH_TOKEN')
+            .status(200)
+            .msg('Signout successful!')
+            .send()
     } catch (e) {
         next(e)
     }
@@ -69,21 +90,22 @@ const signout = async (req, res, next) => {
 
 const tokenRefresh = async (req, res, next) => {
     try {
-        req.accessToken = await AuthUtils.getAccessToken(req.headers.authorization)
-        const { customer, primaryKey } = await JWT.decode(req.accessToken) //decoding access token
-        if (!customer && !primaryKey) throw new UnauthorizationError('Invalid access Token!')
+        const AccessToken = await AuthUtils.getAccessToken(req.headers.authorization)
+        const RefreshToken = await AuthUtils.getRefreshToken(req.signedCookies, 'REFRESH_TOKEN')
+        const accessTokenPayload = await JWT.decode(AccessToken) //decoding access token
+        if (!accessTokenPayload?.customer && !accessTokenPayload?.primaryKey)
+            throw new UnauthorizationError('Invalid access Token!')
 
-        const getCustomer = await customerRepository.FindById(customer)
+        const getCustomer = await customerRepository.FindById(accessTokenPayload.customer)
         if (!getCustomer) throw new UnauthorizationError('Customer is not registered!')
-        const refreshTokenPayload = await JWT.decode(req.body.refreshToken) //decoding refresh token
-        /*
-         * compairing accessTokenPayload(customer) === refreshTokenPayload(customer)
-         */
-        if (refreshTokenPayload.customer !== customer)
+        const refreshTokenPayload = await JWT.decode(RefreshToken) //decoding refresh token
+        if (!refreshTokenPayload?.customer && !refreshTokenPayload?.secondaryKey)
+            throw new UnauthorizationError('Invalid access Token!')
+        if (refreshTokenPayload.customer !== accessTokenPayload.customer)
             throw new UnauthorizationError('Invalid token')
         const keystore = await KeystoreRepository.Find(
             getCustomer._id,
-            primaryKey,
+            accessTokenPayload.primaryKey,
             refreshTokenPayload.secondaryKey
         )
         if (!keystore) throw new UnauthorizationError('Invalid access token')
@@ -94,7 +116,11 @@ const tokenRefresh = async (req, res, next) => {
             newKeystore.primaryKey,
             newKeystore.secondaryKey
         )
-        new ApiResponse(res).status(200).data({ accessToken, refreshToken }).send()
+        new ApiResponse(res)
+            .sendCookie('REFRESH_TOKEN', Number(refreshTokenCookieExpiry), refreshToken)
+            .status(200)
+            .data({ accessToken })
+            .send()
     } catch (e) {
         next(e)
     }

@@ -1,7 +1,6 @@
-const { CustomerRepository, SellerRepository } = require('../database')
+const { CustomerRepository } = require('../database')
 const ApiResponse = require('../helpers/ApiResponse')
 const customerRepository = new CustomerRepository()
-const sellerRepository = new SellerRepository()
 const { BadRequestError } = require('../helpers/AppError')
 
 const addNewAddress = async (req, res, next) => {
@@ -40,9 +39,13 @@ const getAllAddress = async (req, res, next) => {
     }
 }
 const getProfile = async (req, res, next) => {
-    const { _id } = req.user
-    const profile = await customerRepository.FindById(_id, '-password -salt')
-    new ApiResponse(res).status(200).data({ profile }).send()
+    try {
+        const { _id } = req.user
+        const profile = await customerRepository.FindById(_id, '-password -salt')
+        new ApiResponse(res).status(200).data({ profile }).send()
+    } catch (e) {
+        next(e)
+    }
 }
 const addToCart = async (req, res, next) => {
     const data = {
@@ -93,7 +96,7 @@ const changeAvatar = async (req, res, next) => {
     const { _id } = req.user
     const { image } = req
     try {
-        if (image) throw new BadRequestError('Image not found!')
+        if (Object.keys(image).length <= 0) throw new BadRequestError('Image not found!')
         await customerRepository.changeAvatar(_id, image)
         new ApiResponse(res).status(200).msg('Avatar changed successfuly!')
     } catch (e) {
@@ -105,8 +108,6 @@ const getCart = async (req, res, next) => {
     const { _id } = req.user
     try {
         const { cart } = await customerRepository.FindById(_id)
-
-        console.log(cart)
         cart.forEach(
             ({ product: { price, unit } }) => (totalPrice += parseInt(price) * parseInt(unit))
         )
@@ -144,24 +145,14 @@ const getWishlist = async (req, res, next) => {
         next(e)
     }
 }
-const sellerAccountRequest = async (req, res, next) => {
+const getOrders = async (req, res, next) => {
     const { _id } = req.user
-    const data = {
-        ...req.body,
-        customerId: _id,
-    }
     try {
-        const existingRequest = await sellerRepository.FindByCustomerId(_id)
-        if (existingRequest && existingRequest.sellerVerified)
-            throw new BadRequestError('You are already a seller!')
+        const orders = await customerRepository.GetOrders(_id)
+        if (orders?.length <= 0)
+            new ApiResponse(res).status(200).msg("You don't have any orders").send()
 
-        if (existingRequest && existingRequest.sellerVerified)
-            throw new BadRequestError('Your seller request is still pending!')
-
-        if (!req.image) throw new BadRequestError('company logo is required!')
-        data.companyLogo = req.image
-        const sellerProfile = await sellerRepository.Create(data)
-        new ApiResponse(res).status(200).data({ sellerProfile }).send()
+        new ApiResponse(res).status(200).data({ orders }).send()
     } catch (e) {
         next(e)
     }
@@ -179,5 +170,5 @@ module.exports = {
     addToWishlist,
     removeToWishlist,
     changeAvatar,
-    sellerAccountRequest,
+    getOrders,
 }

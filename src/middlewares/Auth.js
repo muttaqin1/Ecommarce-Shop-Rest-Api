@@ -1,4 +1,3 @@
-const router = require('express').Router()
 const { auth } = require('./schema')
 const { validator, src } = require('../helpers/validators')
 const { CustomerRepository, KeystoreRepository } = require('../database')

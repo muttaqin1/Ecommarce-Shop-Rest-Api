@@ -35,26 +35,6 @@ const sendMail = ({ title, body, reciever }) =>
         }
     })
 
-const MailBody = {
-    acceptSellerReq: (recieverName, recieverEmail) => {
-        return {
-            title: 'Congratulations! your seller request has been approved.',
-            body: `Hi ${recieverName},
-          You have unlocked the seller mode of your profile. Now you can showcase your products to sell them.`,
-            reciever: recieverEmail,
-        }
-    },
-
-    rejectSellerReq: (recieverName, recieverEmail) => {
-        return {
-            title: 'your seller request has been rejected!.',
-            body: `Hi ${recieverName},
-          your seller account request doesn\'t match our requirements.So we have decided to reject your seller account request .`,
-            reciever: recieverEmail,
-        }
-    },
-}
-
 const sendOtp = async (reciever) => {
     try {
         const user = await customerRepository.FindByEmail(reciever)
@@ -80,5 +60,4 @@ const sendOtp = async (reciever) => {
 module.exports = {
     sendMail,
     sendOtp,
-    MailBody,
 }

@@ -22,9 +22,9 @@ class ProductRepository {
         }
     }
 
-    async FindById(id) {
+    async FindById(id, select = '') {
         try {
-            return await Product.findById(id).populate('supplier')
+            return await Product.findById(id).select(select)
         } catch {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Product!')
         }

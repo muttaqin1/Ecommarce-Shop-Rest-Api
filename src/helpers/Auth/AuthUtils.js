@@ -24,34 +24,41 @@ class AuthUtils {
             throw new UnauthorizationError('Invalid Authorization')
         return authorization.split(' ')[1]
     }
-
+    static async getRefreshToken(signedCookies, cookieName) {
+        const cookies = Object.keys(signedCookies)?.length > 0 ? signedCookies : false
+        if (!cookies) throw new UnauthorizationError('No token found!')
+        const token = cookies[cookieName]
+        if (!token) throw new UnauthorizationError('No token found!')
+        return token
+    }
     static async createTokens(customer, accessTokenKey, refreshTokenKey) {
-        const accessToken = await JWT.encode(
-            {
-                issuer: tokenIssuer,
-                audience: tokenAudience,
-                customer: customer._id,
-                primaryKey: accessTokenKey,
-            },
-            accessTokenValidityDays
-        )
-        if (!accessToken) throw new APIError()
+        try {
+            const accessToken = await JWT.encode(
+                {
+                    issuer: tokenIssuer,
+                    audience: tokenAudience,
+                    customer: customer._id,
+                    primaryKey: accessTokenKey,
+                },
+                accessTokenValidityDays
+            )
 
-        const refreshToken = await JWT.encode(
-            {
-                issuer: tokenIssuer,
-                audience: tokenAudience,
-                customer: customer._id,
-                secondaryKey: refreshTokenKey,
-            },
-            refreshTokenValidityDays
-        )
+            const refreshToken = await JWT.encode(
+                {
+                    issuer: tokenIssuer,
+                    audience: tokenAudience,
+                    customer: customer._id,
+                    secondaryKey: refreshTokenKey,
+                },
+                refreshTokenValidityDays
+            )
 
-        if (!refreshToken) throw new APIError()
-
-        return {
-            accessToken: accessToken,
-            refreshToken: refreshToken,
+            return {
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+            }
+        } catch {
+            throw new APIError()
         }
     }
 }

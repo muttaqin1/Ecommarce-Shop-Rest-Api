@@ -1,15 +1,14 @@
-const { ProductRepository, SellerRepository } = require('../database')
-const { CreateProduct, DeleteProduct, UpdateProduct, FindById } = new ProductRepository()
+const { ProductRepository, OrderRepository } = require('../database')
+const productRepository = new ProductRepository()
+const orderRepository = new OrderRepository()
 const ApiResponse = require('../helpers/ApiResponse')
 const { BadRequestError } = require('../helpers/AppError')
-const sellerRepository = new SellerRepository()
 const {
     uploader: { destroy },
 } = require('../helpers/fileUpload/cloudinary')
 
 const createProduct = async (req, res, next) => {
-    const { sellerAccount } = req.user
-    const { name, description, type, unit, price } = req.body
+    const { name, description, type, unit, price, supplier } = req.body
     try {
         const data = {
             name,
@@ -17,12 +16,11 @@ const createProduct = async (req, res, next) => {
             type,
             unit,
             price,
-            supplier: sellerAccount._id,
+            supplier,
         }
         if (!req.image) throw new BadRequestError('Product image is required!')
         data.banner = req.image
-        const product = await CreateProduct(data)
-        await sellerRepository.AddProduct(sellerAccount._id, product)
+        const product = await productRepository.CreateProduct(data)
         new ApiResponse(res).status(200).data({ product }).send()
     } catch (e) {
         next(e)
@@ -30,18 +28,12 @@ const createProduct = async (req, res, next) => {
 }
 const updateProduct = async (req, res, next) => {
     const { productId } = req.params
-    const { sellerAccount } = req.user
     const updateItems = req.body
     try {
         if (req.image) updateItems.banner = req.image
-
         const product = await FindById(productId)
-        console.log(sellerAccount)
-        if (!product || product.supplier._id.toString() !== sellerAccount._id.toString())
-            throw new BadRequestError('Only seller can update their existing product.')
-
         await destroy(product.banner.publicId) //destroying the current product banner
-        const updatedProduct = await UpdateProduct(productId, updateItems)
+        const updatedProduct = await productRepository.UpdateProduct(productId, updateItems)
         new ApiResponse(res).status(200).data({ updatedProduct }).send()
     } catch (e) {
         next(e)
@@ -49,15 +41,20 @@ const updateProduct = async (req, res, next) => {
 }
 const deleteProduct = async (req, res, next) => {
     const { productId } = req.params
-    const { sellerAccount } = req.user
     try {
         const product = await FindById(productId)
-        if (!product || product.supplier._id.toString() !== sellerAccount._id.toString())
-            throw new BadRequestError('Only seller can delete their existing product.')
+        if (!product) throw new BadRequestError("Product doesn't exist!")
         await destroy(product.banner.publicId) //destroying the product image
-        await DeleteProduct(productId)
-        await sellerRepository.RemoveProduct(sellerAccount._id, productId)
+        await productRepository.DeleteProduct(productId)
         new ApiResponse(res).status(200).msg('Product Deleted!').send()
+    } catch (e) {
+        next(e)
+    }
+}
+const getAllOrders = async (req, res, next) => {
+    try {
+        const orders = await orderRepository.GetAllOrders()
+        new ApiResponse(res).status(200).data({ orders })
     } catch (e) {
         next(e)
     }
@@ -67,4 +64,5 @@ module.exports = {
     createProduct,
     deleteProduct,
     updateProduct,
+    getAllOrders,
 }

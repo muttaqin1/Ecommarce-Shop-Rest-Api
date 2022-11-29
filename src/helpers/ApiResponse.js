@@ -13,16 +13,15 @@ class ApiResponse {
         this.Message = ''
     }
     status(status) {
-        if (!status && typeof status !== 'number' && status >= 1000)
-            throw new Error(
-                'Status is required and it must have to be Number and a valid http status code.'
-            )
-        this.Status = status
+        if (!status && typeof status !== 'number')
+            throw new TypeError('Status must be a valid number')
+        this.status = status
         return this
     }
-    sendCookie(name,expiry, payload) {
-        if (!payload && !name) throw new Error('Name and payload is required to send a cookie.')
+    sendCookie(name, expiry, payload) {
+        if (!payload && !name) throw new TypeError('Name and payload is required to send a cookie.')
         this.Response.cookie(name, payload, {
+            secured: true,
             httpOnly: true,
             signed: true,
             maxAge: expiry,
@@ -30,18 +29,18 @@ class ApiResponse {
         return this
     }
     removeCookie(name) {
-        if (!name) throw new Error('Name is required to remove a cookie.')
+        if (!name) throw new TypeError('Name is required to remove a cookie.')
         this.Response.clearCookie(name)
         return this
     }
     data(data) {
-        if (!data && typeof data !== 'object')
+        if (Object.keys(data).length <= 0 && typeof data !== 'object')
             throw new TypeError('Data is required and it must be a valid object.')
         this.Data = data
         return this
     }
     msg(msg) {
-        if (!msg && typeof msg !== 'string')
+        if (!msg && msg.length <= 0 && typeof msg !== 'string')
             throw new TypeError('Message is required and it must be a valid  string.')
         this.Message = msg
         return this

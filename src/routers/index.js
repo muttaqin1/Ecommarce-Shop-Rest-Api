@@ -4,4 +4,6 @@ module.exports = {
     customer: require('./customer'),
     admin: require('./admin'),
     seller: require('./seller'),
+    stripe: require('./stripe'),
+    order: require('./order'),
 }

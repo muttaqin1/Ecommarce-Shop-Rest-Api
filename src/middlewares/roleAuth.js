@@ -1,19 +1,24 @@
 const { UnauthorizationError } = require('../helpers/AppError')
 
-const verifyRole = (acceptedRole) => async (req, res, next) => {
-    try {
-        if (!req.user || !req.user.role) throw new UnauthorizationError('Permission denied')
-        if (req.user.role !== acceptedRole) throw new UnauthorizationError('Permission denied')
-        return next()
-    } catch {
-        next(new UnauthorizationError('Permission denied!'))
+const verifyRole =
+    (...acceptedRole) =>
+    async (req, res, next) => {
+        try {
+            if (!req.user?.roles) throw new UnauthorizationError('Permission denied')
+            const result = req.user.roles
+                .map((role) => acceptedRole.includes(role))
+                .find((val) => val === true)
+            if (!result) throw new UnauthorizationError('Permission denied!')
+            next()
+        } catch {
+            next(new UnauthorizationError('Permission denied!'))
+        }
     }
-}
 
 const roles = {
-    admin: 'ADMIN',
-    seller: 'SELLER',
-    customer: 'CUSTOMER',
+    Admin: 233320,
+    Seller: 465545,
+    Customer: 987663,
 }
 
 module.exports = {
