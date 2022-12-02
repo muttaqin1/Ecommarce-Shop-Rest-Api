@@ -22,7 +22,29 @@ class OrderRepository {
         try {
             return await Order.find({ status: 'pending' })
         } catch {
-            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to get Orders')
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Orders')
+        }
+    }
+    async FindById(orderId) {
+        try {
+            return await Order.findById(orderId).populate('customerId')
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Order')
+        }
+    }
+    async CompleteOrder(orderId) {
+        try {
+            return await Order.updateOne(
+                { _id: orderId },
+                {
+                    $set: {
+                        status: 'completed',
+                    },
+                }
+            )
+        } catch (e) {
+            console.log(e)
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to complete Order')
         }
     }
 }

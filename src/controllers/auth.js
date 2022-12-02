@@ -1,8 +1,14 @@
 const ApiResponse = require('../helpers/ApiResponse')
 const { BadRequestError, UnauthorizationError } = require('../helpers/AppError')
-const { CustomerRepository, KeystoreRepository, OtpRepository } = require('../database')
+const {
+    CustomerRepository,
+    KeystoreRepository,
+    OtpRepository,
+    PHistoryRepository,
+} = require('../database')
 const AuthUtils = require('../helpers/Auth/AuthUtils')
 const customerRepository = new CustomerRepository()
+const pHistoryRepository = new PHistoryRepository()
 const JWT = require('../helpers/Auth/JWT')
 const {
     roleAuth: { roles },
@@ -31,6 +37,7 @@ const signup = async (req, res, next) => {
         }
         if (req.image) data.avatar = req.image
         const createdCustomer = await customerRepository.Create(data)
+        await pHistoryRepository.Create(createdCustomer._id)
         const keystore = await KeystoreRepository.Create(createdCustomer._id)
         const { accessToken, refreshToken } = await AuthUtils.createTokens(
             createdCustomer._id,

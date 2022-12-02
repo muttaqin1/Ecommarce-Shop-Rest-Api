@@ -14,7 +14,7 @@ const customerSchema = new Schema(
             required: true,
             lowercase: true,
         },
-        emailVerified: Boolean,
+        emailVerified: { type: Boolean, default: false },
         avatar: {
             url: { type: String, trim: true },
             publicId: { type: String, trim: true },
@@ -47,6 +47,7 @@ const customerSchema = new Schema(
             },
         ],
         orders: [{ type: Schema.Types.ObjectId, ref: 'Order', required: true }],
+        purchaseHistory: { type: Schema.Types.ObjectId, ref: 'PurchaseHistorie' },
         createdAt: {
             type: Date,
             default: Date.now,

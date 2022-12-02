@@ -13,7 +13,7 @@ const productSchema = new Schema(
             url: { type: String },
             publicId: { type: String },
         },
-        type: {
+        category: {
             type: String,
             required: true,
         },
@@ -35,8 +35,8 @@ const productSchema = new Schema(
         },
         reviews: [
             {
-                rating: Number,
-                customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
+                rating: { type: Number, required: true },
+                customer: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
                 text: { type: String, trim: true },
             },
         ],

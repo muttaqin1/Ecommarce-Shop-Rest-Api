@@ -1,21 +1,31 @@
 const router = require('express').Router()
 const {
-    sellerController: { createProduct, updateProduct, deleteProduct },
+    sellerController: { createProduct, updateProduct, deleteProduct, completeOrder, getAllOrders },
 } = require('../controllers')
-const { Authentication } = require('../middlewares')
-const { CreateProduct, UpdateProduct, checkProductId } = require('./schemas/sellerSchema')
+const {
+    Authentication,
+    roleAuth: { verifyRole, roles },
+} = require('../middlewares')
+const {
+    CreateProduct,
+    UpdateProduct,
+    checkProductId,
+    checkOrder,
+} = require('./schemas/sellerSchema')
 const { validator, src } = require('../helpers/validators')
 const imageUploader = require('../helpers/fileUpload/imageUpload')
 router.post(
     '/products',
-    //imageUploader('Banner', 'Banners'),
     Authentication,
+    verifyRole(roles.Seller, roles.Admin),
+    imageUploader('Banner', 'Banners'),
     validator(CreateProduct),
     createProduct
 )
 router.put(
     '/products/:productId',
     Authentication,
+    verifyRole(roles.Admin, roles.Seller),
     imageUploader('Banner', 'Banners'),
     validator(UpdateProduct),
     updateProduct
@@ -23,7 +33,16 @@ router.put(
 router.delete(
     '/products/:productId',
     Authentication,
+    verifyRole(roles.Seller, roles.Admin),
     validator(checkProductId, src.PARAM),
     deleteProduct
 )
+router.put(
+    '/orders/:orderId',
+    Authentication,
+    verifyRole(roles.Admin, roles.Seller),
+    validator(checkOrder, src.PARAM),
+    completeOrder
+)
+router.get('/orders', Authentication, verifyRole(roles.Seller, roles.Admin), getAllOrders)
 module.exports = router

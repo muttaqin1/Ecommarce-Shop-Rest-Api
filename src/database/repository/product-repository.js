@@ -29,10 +29,17 @@ class ProductRepository {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Product!')
         }
     }
+    async FindByName(name) {
+        try {
+            return await Product.find({ name })
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Product!')
+        }
+    }
 
     async FindByCategory(category) {
         try {
-            return await Product.find({ type: category })
+            return await Product.find({ category })
         } catch {
             throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Find Category')
         }
@@ -59,16 +66,67 @@ class ProductRepository {
     }
     async UpdateProduct(productId, object) {
         try {
-            const updatedProduct = await Product.findOneAndUpdate({ _id: productId }, object, {
+            return await Product.findOneAndUpdate({ _id: productId }, object, {
                 new: true,
             })
-            return updatedProduct
-        } catch (e) {
-            console.log(e)
+        } catch {
             throw new APIError(
                 'API Error',
                 STATUS_CODES.INTERNAL_ERROR,
                 'Unable to update product!'
+            )
+        }
+    }
+    async AddReview(productId, object) {
+        try {
+            return await Product.findOneAndUpdate(
+                { _id: productId },
+                {
+                    $push: {
+                        reviews: object,
+                    },
+                },
+                { new: true }
+            )
+        } catch {
+            throw new APIError(
+                'API Error',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Unable to update product!'
+            )
+        }
+    }
+
+    async UpdateReview(productId, { customer: customerId, text, rating }) {
+        try {
+            const product = await Product.findById(productId)
+            const { reviews } = product
+            const index = reviews?.findIndex(
+                ({ customer }) => customer.toString() === customerId.toString()
+            )
+            if (text) reviews[index].text = text
+            if (rating) reviews[index].rating = rating
+            return await product.save()
+        } catch (e) {
+            console.log(e)
+            throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to update review!')
+        }
+    }
+
+    async DeleteReview(productId, customerId) {
+        try {
+            const product = await Product.findById(productId)
+            const { reviews } = product
+            const index = reviews?.findIndex(
+                ({ customer }) => customer.toString() === customerId.toString()
+            )
+            reviews.splice(index, 1)
+            return await product.save()
+        } catch {
+            throw new APIError(
+                'API Error',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Failed to delete product!'
             )
         }
     }

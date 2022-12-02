@@ -5,4 +5,5 @@ module.exports = {
     KeystoreRepository: require('./repository/keystore-repository'),
     OtpRepository: require('./repository/otp-repository'),
     OrderRepository: require('./repository/order-repository'),
+    PHistoryRepository: require('./repository/PHistory-repository'),
 }

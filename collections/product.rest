@@ -2,31 +2,38 @@ http://localhost:4000
 -i
 --connect-timeout 10
 Content-Type: application/json
+
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3N1ZXIiOiJleGFtcGxlLmNvbSIsImF1ZGllbmNlIjoiZXhhbXBsZS5jb20iLCJjdXN0b21lciI6IjYzODg5MGM4NjM0MDMwNTU4OGEzZTQ1NSIsInByaW1hcnlLZXkiOiIwOThhYmI4OTc2OWM0MWZiYzkwOTQ1N2QzNjI0NmRmMmFmYWU1YmYxMzgxYTJlN2FiYjdmNGVjODIzM2IyMjFiYTc3Y2JhN2ZkZjgyMjhiNjQxYmQ4YmI0NTM5NWM1NWNmOTVlMGVkZTYyYTk4NWJhMmZmMDU3NTk4ZmNkOTcwYSIsImlhdCI6MTY2OTg5NTcyMCwiZXhwIjoxNjcwNzU5NzIwfQ.HOyyjJHASO2jd7dJmP3WG2HtOGv0jzkInpdlFnRRxld4xO1IwOMHdwGBCsSzvJ-FgkFaOSJmbzFGnrK3wpNAN_ZRhmw90D2hL22xzzxGUTYpsf2lGfIb52IUhS1S1NWuII0Dox0jfe09J3pzaZYYIZRr0HfO8kcjzhmg4QUICEllduQXwdggZsF1SvWMt30Fi4mBiTzORfZwLAd-JCLAF5nM8amHW8R2ORKoVrBFclG8ubA1gMqxlNDIiyFhwe0kiMeB4_IZCMWazfi9vShh5D72CP72eCkiSNI_XWQAwzrQ8m5iu69qm03TmJgEnohrydDy3hqZop4WkMtVblLlScIfZC7PwgUrhmQADEKOmqlmPAq8eL6s_4UbKqE_NFg1AYPLw3nCWcrglXt8nB52oe3DxmCI5tr-G9SyHoX9zlCP8-A9YHHS7wVE04l0c02E84fGxcqhGt-CDQiJI5jIfWYKpCRU4zJV8QavxsDk45dZIOzrSMtSvjt3swGxMlEy
 -
 --
+--
 
---
---
-#get customer order
-GET /api/customer/order 
---
-POST /api/order
+POST /api/products 
 {
-
-"products":[
-{"productId":"6383b1d9d1dd06efbcc5fe80", "quantity":1},
-{"productId":"6383b1e6d1dd06efbcc5fe84", "quantity":1},
-{"productId":"6383b1eed1dd06efbcc5fe88", "quantity":1}
-],
-"address":"63889758b151310ef425932b"
+"name":"test 11122",
+"description":"this is a test .this is a test",
+"price":2122,
+"category":"electronics",
+"unit":"12",
+"supplier":"Muttaqin Muhammad"
 }
 --
-//cancel order
-DELETE /api/order/638897b8b151310ef4259335
---
-//complete order
-PUT /api/order/638897f8b151310ef425934a
+#post a review
+POST /api/products/reviews/63896e52bcc609a680105506
+
+
+{
+  "rating":5,
+  "text":"nice product!"
+}
 
 --
-GET /api/orders
+#update a review
+PUT /api/products/reviews/63896e52bcc609a680105506 
+{
+  "rating":1,
+  "text":"Bad  product!"
+}
+
+--
+DELETE /api/products/reviews/63896e52bcc609a680105506
