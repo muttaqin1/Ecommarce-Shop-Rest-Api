@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose')
 
-const schema = new Schema({
+const otpSchema = new Schema({
     otp: {
         type: String,
         required: true,
@@ -13,7 +13,6 @@ const schema = new Schema({
     },
     verified: {
         type: Boolean,
-        required: true,
         default: false,
     },
     createdAt: {
@@ -23,5 +22,5 @@ const schema = new Schema({
     },
 })
 
-const Otp = new model('otp', schema)
+const Otp = new model('otp', otpSchema)
 module.exports = Otp

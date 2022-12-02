@@ -27,7 +27,7 @@ const createOrder = async (req, res, next) => {
             )
             data.amount = amountArr.reduce((acc, curr) => acc + curr)
         }
-
+        await productRepository.ManageStockForNewOrders(products)
         const order = await orderRepository.Create(data)
         await customerRepository.AddOrder(_id, order._id)
         new ApiResponse(res).status(200).data({ order }).send()
@@ -43,6 +43,8 @@ const cancelOrder = async (req, res, next) => {
         const { orders } = await customerRepository.FindById(_id)
         const exists = orders.find((order) => order.toString() === orderId.toString())
         if (!exists) throw new BadRequestError('No order found!')
+        const order = await orderRepository.FindById(exists)
+        await productRepository.ManageStockForCancelledOrders(order.products)
         await customerRepository.RemoveOrder(_id, exists)
         await orderRepository.Cancel(exists)
         new ApiResponse(res).status(200).msg('Order cancelled.').send()

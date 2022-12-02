@@ -7,6 +7,7 @@ const {
     app_name,
     Nodemailer: { SMTP_EMAIL, SMTP_PASSWORD },
 } = require('../config')
+
 const sendMail = ({ title, body, reciever }) =>
     new Promise(async (resolve, reject) => {
         try {

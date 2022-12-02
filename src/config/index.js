@@ -16,7 +16,7 @@ module.exports = {
         tokenAudience: process.env.TOKEN_AUDIENCE,
         accessTokenValidityDays: process.env.ACCESS_TOKEN_VALIDITY_DAYS || '10min',
         refreshTokenValidityDays: process.env.REFRESH_TOKEN_VALIDITY_DAYS || '30d',
-        refreshTokenCookieExpiry: process.env.REFRESH_TOKEN_COOKIE_EXPIRY,
+        refreshTokenCookieExpiry: Number(process.env.REFRESH_TOKEN_COOKIE_EXPIRY),
     },
     Nodemailer: {
         SMTP_EMAIL: process.env.SMTP_EMAIL,

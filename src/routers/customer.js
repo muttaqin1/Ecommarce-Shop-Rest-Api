@@ -27,9 +27,10 @@ const {
     validateProduct,
     validateImage,
 } = require('./schemas/customerSchema')
-
-const imageUpload = require('../helpers/fileUpload/imageUpload')
-const { validator, src } = require('../helpers/validators')
+const {
+    validators: { src, validator },
+    FileUpload: { imageUpload },
+} = require('../helpers')
 
 router.post('/customer/address', Authentication, validator(addAddress), addNewAddress)
 router.delete(

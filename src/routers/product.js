@@ -12,7 +12,10 @@ const {
     },
 } = require('../controllers')
 const { checkProductId, CreateReview, UpdateReview } = require('./schemas/productSchema')
-const { validator, src } = require('../helpers/validators')
+const {
+    validators: { validator, src },
+} = require('../helpers')
+
 router.get('/products', getProducts)
 router.get('/products/:id', findProduct)
 router.get('/products/category/:type', findByCategory)

@@ -6,14 +6,15 @@ const {
     OtpRepository,
     PHistoryRepository,
 } = require('../database')
-const AuthUtils = require('../helpers/Auth/AuthUtils')
+const {
+    Auth: { AuthUtils, JWT },
+    sendMail: { sendOtp },
+} = require('../helpers')
 const customerRepository = new CustomerRepository()
 const pHistoryRepository = new PHistoryRepository()
-const JWT = require('../helpers/Auth/JWT')
 const {
     roleAuth: { roles },
 } = require('../middlewares')
-const { sendOtp } = require('../helpers/sendMail')
 const {
     jwt: { refreshTokenCookieExpiry },
 } = require('../config')
@@ -46,7 +47,7 @@ const signup = async (req, res, next) => {
         )
 
         new ApiResponse(res)
-            .sendCookie('REFRESH_TOKEN', Number(refreshTokenCookieExpiry), refreshToken)
+            .sendCookie('REFRESH_TOKEN', refreshTokenCookieExpiry, refreshToken)
             .status(200)
             .data({ createdCustomer, accessToken })
             .send()
@@ -60,7 +61,6 @@ const signin = async (req, res, next) => {
     try {
         const customer = await customerRepository.FindByEmail(email)
         if (!customer) throw new UnauthorizationError('Access Denied!')
-
         const verify = await AuthUtils.ValidatePassword(password, customer.password, customer.salt)
         if (!verify) throw new UnauthorizationError('Access Denied!')
         //deleting old keystore document
@@ -74,7 +74,7 @@ const signin = async (req, res, next) => {
         )
 
         new ApiResponse(res)
-            .sendCookie('REFRESH_TOKEN', Number(refreshTokenCookieExpiry), refreshToken)
+            .sendCookie('REFRESH_TOKEN', refreshTokenCookieExpiry, refreshToken)
             .status(200)
             .data({ accessToken })
             .send()
@@ -96,8 +96,9 @@ const signout = async (req, res, next) => {
 }
 
 const tokenRefresh = async (req, res, next) => {
+    const { authorization } = req.headers
     try {
-        const AccessToken = await AuthUtils.getAccessToken(req.headers.authorization)
+        const AccessToken = await AuthUtils.getAccessToken(authorization)
         const RefreshToken = await AuthUtils.getRefreshToken(req.signedCookies, 'REFRESH_TOKEN')
         const accessTokenPayload = await JWT.decode(AccessToken) //decoding access token
         if (!accessTokenPayload?.customer && !accessTokenPayload?.primaryKey)
@@ -107,7 +108,7 @@ const tokenRefresh = async (req, res, next) => {
         if (!getCustomer) throw new UnauthorizationError('Customer is not registered!')
         const refreshTokenPayload = await JWT.decode(RefreshToken) //decoding refresh token
         if (!refreshTokenPayload?.customer && !refreshTokenPayload?.secondaryKey)
-            throw new UnauthorizationError('Invalid access Token!')
+            throw new UnauthorizationError('Invalid refresh Token!')
         if (refreshTokenPayload.customer !== accessTokenPayload.customer)
             throw new UnauthorizationError('Invalid token')
         const keystore = await KeystoreRepository.Find(
@@ -124,7 +125,7 @@ const tokenRefresh = async (req, res, next) => {
             newKeystore.secondaryKey
         )
         new ApiResponse(res)
-            .sendCookie('REFRESH_TOKEN', Number(refreshTokenCookieExpiry), refreshToken)
+            .sendCookie('REFRESH_TOKEN', refreshTokenCookieExpiry, refreshToken)
             .status(200)
             .data({ accessToken })
             .send()

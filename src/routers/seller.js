@@ -1,6 +1,14 @@
 const router = require('express').Router()
 const {
-    sellerController: { createProduct, updateProduct, deleteProduct, completeOrder, getAllOrders },
+    sellerController: {
+        createProduct,
+        updateProduct,
+        deleteProduct,
+        completeOrder,
+        getAllOrders,
+        getMonthlyIncome,
+        getStockStatus,
+    },
 } = require('../controllers')
 const {
     Authentication,
@@ -12,12 +20,15 @@ const {
     checkProductId,
     checkOrder,
 } = require('./schemas/sellerSchema')
-const { validator, src } = require('../helpers/validators')
-const imageUploader = require('../helpers/fileUpload/imageUpload')
+const {
+    validators: { validator, src },
+    FileUpload: { imageUpload: imageUploader },
+} = require('../helpers')
+
 router.post(
     '/products',
     Authentication,
-    verifyRole(roles.Seller, roles.Admin),
+    verifyRole(roles.Seller, roles.Admin, roles.Customer),
     imageUploader('Banner', 'Banners'),
     validator(CreateProduct),
     createProduct
@@ -40,9 +51,17 @@ router.delete(
 router.put(
     '/orders/:orderId',
     Authentication,
-    verifyRole(roles.Admin, roles.Seller),
+    verifyRole(roles.Admin, roles.Seller, roles.Customer),
     validator(checkOrder, src.PARAM),
     completeOrder
 )
+router.get('/products/stock/status', Authentication, getStockStatus)
+router.get(
+    '/orders/monthly-income',
+    Authentication,
+    verifyRole(roles.Seller, roles.Admin),
+    getMonthlyIncome
+)
+
 router.get('/orders', Authentication, verifyRole(roles.Seller, roles.Admin), getAllOrders)
 module.exports = router

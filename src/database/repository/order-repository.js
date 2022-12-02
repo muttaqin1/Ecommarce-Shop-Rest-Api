@@ -42,9 +42,41 @@ class OrderRepository {
                     },
                 }
             )
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to complete Order')
+        }
+    }
+    async GetMonthlyIncome() {
+        const currentMonth = new Date(Date.now()).getMonth()
+        try {
+            const orders = await Order.find({ status: 'completed' })
+
+            if (orders?.length <= 0) {
+                return {
+                    currentMonthOrders: 'No orders',
+                    totalEarning: 0,
+                }
+            }
+
+            const currentMonthOrders = orders
+                ?.filter((order) => {
+                    const orderMonth = new Date(order?.createdAt)?.getMonth()
+                    return currentMonth === orderMonth
+                })
+                .map((order) => {
+                    return {
+                        orderId: order._id,
+                        amount: order.amount,
+                    }
+                })
+            const totalEarning = currentMonthOrders.reduce((acc, curr) => acc.amount + curr.amount)
+            return {
+                currentMonthOrders,
+                totalEarning,
+            }
         } catch (e) {
             console.log(e)
-            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to complete Order')
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR)
         }
     }
 }

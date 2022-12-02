@@ -7,12 +7,6 @@
         "dev": "NODE_ENV=development nodemon src/server.js",
         "prod": "NODE_ENV=production node src/server.js"
     },
-    "nodemonConfig": {
-        "ignore": [
-            "src/logs/errLog.js",
-            "src/logs/reqLog.js"
-        ]
-    },
     "keywords": [],
     "author": "Muttaqin Muhammad",
     "license": "ISC",

@@ -1,7 +1,6 @@
 const { Schema, model } = require('mongoose')
-const Customer = require('./Customer')
 
-const schema = new Schema(
+const KeystoreSchema = new Schema(
     {
         customer: {
             type: Schema.Types.ObjectId,
@@ -23,6 +22,5 @@ const schema = new Schema(
     }
 )
 
-const KeystoreModel = new model('keystore', schema)
+const KeystoreModel = new model('keystore', KeystoreSchema)
 module.exports = KeystoreModel
-

@@ -4,10 +4,11 @@ const customerRepository = new CustomerRepository()
 const { BadRequestError } = require('../helpers/AppError')
 
 const addNewAddress = async (req, res, next) => {
+    const { _id } = req.user
     try {
         const data = {
             ...req.body,
-            id: req.user._id,
+            id: _id,
         }
         const updatedCustomer = await customerRepository.CreateAddress(data)
         if (!updatedCustomer) throw new BadRequestError('failed to update Customer!')
@@ -18,13 +19,16 @@ const addNewAddress = async (req, res, next) => {
     }
 }
 const deleteAddress = async (req, res, next) => {
-    const addressToDelete = req.params.address
+    const { address } = req.params
     const { _id } = req.user
     try {
-        const doesAddressExist = await customerRepository.GetSingleAddress(_id, addressToDelete)
+        const doesAddressExist = await customerRepository.GetSingleAddress(_id, address)
         if (!doesAddressExist) throw new BadRequestError('Invalid address.')
-        const { address } = await customerRepository.DeleteAddress(_id, addressToDelete)
-        new ApiResponse(res).status(200).data({ address }).send()
+        const { address: updatedAddress } = await customerRepository.DeleteAddress(
+            _id,
+            addressToDelete
+        )
+        new ApiResponse(res).status(200).data({ address: updatedAddress }).send()
     } catch (e) {
         next(e)
     }
@@ -96,9 +100,9 @@ const changeAvatar = async (req, res, next) => {
     const { _id } = req.user
     const { image } = req
     try {
-        if (Object.keys(image).length <= 0) throw new BadRequestError('Image not found!')
+        if (!image) throw new BadRequestError('Image not found!')
         await customerRepository.changeAvatar(_id, image)
-        new ApiResponse(res).status(200).msg('Avatar changed successfuly!')
+        new ApiResponse(res).status(200).msg('Avatar changed successfuly!').send()
     } catch (e) {
         next(e)
     }

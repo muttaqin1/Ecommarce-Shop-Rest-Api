@@ -1,5 +1,7 @@
 const router = require('express').Router()
+
 const { Authentication } = require('../middlewares')
+
 const {
     authController: {
         signup,
@@ -12,6 +14,7 @@ const {
         resetPassword,
     },
 } = require('../controllers')
+
 const {
     Signin,
     Signup,
@@ -19,9 +22,13 @@ const {
     otp: { checkEmail, checkOtpId, otp, checkPassword },
     changePass,
 } = require('./schemas/authSchema')
+
 const { validateImage } = require('./schemas/customerSchema')
-const { validator, src } = require('../helpers/validators')
-const imageUpload = require('../helpers/fileUpload/imageUpload')
+
+const {
+    validators: { validator, src },
+    FileUpload: { imageUpload },
+} = require('../helpers')
 
 router.post('/auth/signup', imageUpload('avatar', 'avatars'), validator(Signup), signup)
 router.post('/auth/signin', validator(Signin), signin)

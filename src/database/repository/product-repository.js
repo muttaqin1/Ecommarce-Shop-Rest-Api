@@ -1,4 +1,4 @@
-const { STATUS_CODES, APIError } = require('../../helpers/AppError')
+const { STATUS_CODES, APIError, BadRequestError } = require('../../helpers/AppError')
 
 const Product = require('../models/Product')
 
@@ -16,7 +16,7 @@ class ProductRepository {
     }
     async Products() {
         try {
-            return await Product.find()
+            return await Product.find({ unit: { $ne: 0 } })
         } catch {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Product!')
         }
@@ -31,7 +31,7 @@ class ProductRepository {
     }
     async FindByName(name) {
         try {
-            return await Product.find({ name })
+            return await Product.find({ name, unit: { $ne: 0 } })
         } catch {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Product!')
         }
@@ -107,8 +107,7 @@ class ProductRepository {
             if (text) reviews[index].text = text
             if (rating) reviews[index].rating = rating
             return await product.save()
-        } catch (e) {
-            console.log(e)
+        } catch {
             throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to update review!')
         }
     }
@@ -127,6 +126,53 @@ class ProductRepository {
                 'API Error',
                 STATUS_CODES.INTERNAL_ERROR,
                 'Failed to delete product!'
+            )
+        }
+    }
+
+    async ManageStockForNewOrders(productArr) {
+        try {
+            for (const { productId, quantity } of productArr) {
+                const { unit: availableUnits, name } = await Product.findById(productId)
+                if (availableUnits - quantity < 0)
+                    throw new BadRequestError(
+                        `${name} is out of stock. availableUnits :${availableUnits}`
+                    )
+                const updatedStock = availableUnits - quantity
+                await Product.updateOne(
+                    { _id: productId },
+                    {
+                        $set: {
+                            unit: updatedStock,
+                        },
+                    }
+                )
+            }
+        } catch (e) {
+            throw new BadRequestError(e.message)
+        }
+    }
+    async ManageStockForCancelledOrders(productArr) {
+        try {
+            productArr?.forEach(async ({ productId, quantity }) => {
+                const product = await Product.findById(productId)
+                product.unit += quantity
+                await product.save()
+            })
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, e.message)
+        }
+    }
+
+    async GetStockStatus() {
+        try {
+            return await Product.find({ unit: 0 })
+        } catch (e) {
+            console.log(e)
+            throw new APIError(
+                'API ERROR',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Failed to get stock status'
             )
         }
     }

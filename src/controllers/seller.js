@@ -12,7 +12,7 @@ const pHistoryRepository = new PHistoryRepository()
 const ApiResponse = require('../helpers/ApiResponse')
 const { BadRequestError } = require('../helpers/AppError')
 const {
-    uploader: { destroy },
+    uploader: { destroy: deleteProductImage },
 } = require('../helpers/fileUpload/cloudinary')
 
 const createProduct = async (req, res, next) => {
@@ -26,8 +26,8 @@ const createProduct = async (req, res, next) => {
             price,
             supplier,
         }
-        // if (!req.image) throw new BadRequestError('Product image is required!')
-        //data.banner = req.image
+        if (!req.image) throw new BadRequestError('Product image is required!')
+        data.banner = req.image
         const product = await productRepository.CreateProduct(data)
         new ApiResponse(res).status(200).data({ product }).send()
     } catch (e) {
@@ -40,7 +40,7 @@ const updateProduct = async (req, res, next) => {
     try {
         if (req.image) updateItems.banner = req.image
         const product = await FindById(productId)
-        await destroy(product.banner.publicId) //destroying the current product banner
+        await deleteProductImage(product.banner.publicId) //destroying the current product banner
         const updatedProduct = await productRepository.UpdateProduct(productId, updateItems)
         new ApiResponse(res).status(200).data({ updatedProduct }).send()
     } catch (e) {
@@ -52,7 +52,7 @@ const deleteProduct = async (req, res, next) => {
     try {
         const product = await FindById(productId)
         if (!product) throw new BadRequestError("Product doesn't exist!")
-        await destroy(product.banner.publicId) //destroying the product image
+        await deleteProductImage(product.banner.publicId) //destroying the product image
         await productRepository.DeleteProduct(productId)
         new ApiResponse(res).status(200).msg('Product Deleted!').send()
     } catch (e) {
@@ -71,6 +71,8 @@ const completeOrder = async (req, res, next) => {
     const { orderId } = req.params
     try {
         const order = await orderRepository.FindById(orderId)
+        if (order.status.toUpperCase() === 'COMPLETED')
+            throw new BadRequestError('Order already completed.')
         if (!order) throw new BadRequestError('No order found!')
         order.products.forEach(async ({ productId, quantity }) => {
             const product = await productRepository.FindById(productId)
@@ -87,11 +89,39 @@ const completeOrder = async (req, res, next) => {
         next(e)
     }
 }
-
+const getMonthlyIncome = async (req, res, next) => {
+    try {
+        const monthlyIncome = await orderRepository.GetMonthlyIncome()
+        new ApiResponse(res)
+            .status(200)
+            .data({ ...monthlyIncome })
+            .send()
+    } catch (e) {
+        next(e)
+    }
+}
+const getStockStatus = async (req, res, next) => {
+    try {
+        const stockOutProducts = await productRepository.GetStockStatus()
+        const mappedProducts = stockOutProducts.map((product) => product._id)
+        const count = mappedProducts.length
+        new ApiResponse(res)
+            .status(200)
+            .data({
+                products: mappedProducts,
+                count,
+            })
+            .send()
+    } catch (e) {
+        next(e)
+    }
+}
 module.exports = {
     createProduct,
     deleteProduct,
     updateProduct,
     getAllOrders,
     completeOrder,
+    getMonthlyIncome,
+    getStockStatus,
 }
