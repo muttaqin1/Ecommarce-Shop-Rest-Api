@@ -1,6 +1,5 @@
 /*
  * Author:Muttaqin Muhammad
- * email:mdmuttaqin20@gmail.com
  * facebook:https://www.facebook.com/Muttaqin01
  * description: Creating an array of middleware to complete the full image upload operation and use it in any router.
  */

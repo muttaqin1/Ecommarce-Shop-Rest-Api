@@ -1,6 +1,5 @@
 /*
  * Author:Muttaqin Muhammad
- * email:mdmuttaqin20@gmail.com
  * facebook:https://www.facebook.com/Muttaqin01
  * description: Creating a class to send response and prevent code repeating. .
  */
