@@ -28,6 +28,7 @@ const createOrder = async (req, res, next) => {
             data.amount = amountArr.reduce((acc, curr) => acc + curr)
         }
         await productRepository.ManageStockForNewOrders(products)
+        await customerRepository.ManageCart(_id, products)
         const order = await orderRepository.Create(data)
         await customerRepository.AddOrder(_id, order._id)
         new ApiResponse(res).status(200).data({ order }).send()

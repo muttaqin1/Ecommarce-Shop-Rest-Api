@@ -8,6 +8,7 @@ const {
         getAllOrders,
         getMonthlyIncome,
         getStockStatus,
+        genDiscountToken,
     },
 } = require('../controllers')
 const {
@@ -19,6 +20,7 @@ const {
     UpdateProduct,
     checkProductId,
     checkOrder,
+    discountToken,
 } = require('./schemas/sellerSchema')
 const {
     validators: { validator, src },
@@ -28,7 +30,7 @@ const {
 router.post(
     '/products',
     Authentication,
-    verifyRole(roles.Seller, roles.Admin, roles.Customer),
+    verifyRole(roles.Seller),
     imageUploader('Banner', 'Banners'),
     validator(CreateProduct),
     createProduct
@@ -36,7 +38,7 @@ router.post(
 router.put(
     '/products/:productId',
     Authentication,
-    verifyRole(roles.Admin, roles.Seller),
+    verifyRole(roles.Seller),
     imageUploader('Banner', 'Banners'),
     validator(UpdateProduct),
     updateProduct
@@ -44,24 +46,22 @@ router.put(
 router.delete(
     '/products/:productId',
     Authentication,
-    verifyRole(roles.Seller, roles.Admin),
+    verifyRole(roles.Seller),
     validator(checkProductId, src.PARAM),
     deleteProduct
 )
 router.put(
     '/orders/:orderId',
     Authentication,
-    verifyRole(roles.Admin, roles.Seller, roles.Customer),
+    verifyRole(roles.Seller),
     validator(checkOrder, src.PARAM),
     completeOrder
 )
-router.get('/products/stock/status', Authentication, getStockStatus)
-router.get(
-    '/orders/monthly-income',
-    Authentication,
-    verifyRole(roles.Seller, roles.Admin),
-    getMonthlyIncome
-)
+router.post('/discount-token', Authentication, verifyRole(roles.Customer), genDiscountToken)
+//get discount token
 
-router.get('/orders', Authentication, verifyRole(roles.Seller, roles.Admin), getAllOrders)
+router.get('/products/stock/status', Authentication, verifyRole(roles.Seller), getStockStatus)
+router.get('/orders/monthly-income', Authentication, verifyRole(roles.Seller), getMonthlyIncome)
+
+router.get('/orders', Authentication, verifyRole(roles.Seller), getAllOrders)
 module.exports = router

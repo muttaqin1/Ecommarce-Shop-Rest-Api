@@ -17,8 +17,8 @@ const {
 } = require('../helpers')
 
 router.get('/products', getProducts)
-router.get('/products/:id', findProduct)
-router.get('/products/category/:type', findByCategory)
+router.get('/products', findProduct)
+router.get('/products/:category', findByCategory)
 router.post('/products/ids', findSelectedProducts)
 router.post(
     '/products/reviews/:productId',

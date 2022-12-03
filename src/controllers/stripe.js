@@ -1,45 +1,34 @@
 const {
-    server: { url },
     stripe: { secretKey },
 } = require('../config')
 const stripe = require('stripe')(secretKey)
-const { ProductRepository, CustomerRepository, OrderRepository } = require('../database')
-const productRepository = new ProductRepository()
-const customerRepository = new CustomerRepository()
+const { OrderRepository } = require('../database')
+const orderRepository = new OrderRepository()
 const { BadRequestError } = require('../helpers/AppError')
 const ApiResponse = require('../helpers/ApiResponse')
 
 const payment = async (req, res, next) => {
-    const { _id } = req.user
-    const { items } = req.body
-    const products = await productRepository.Products()
+    const { _id, orders } = req.user
+    const { orderId, token } = req.body
     try {
-        const sessionConfig = {
-            payment_method_types: ['card'],
-            mode: 'payment',
-            line_items: items.map(({ id, quantity }) => {
-                const product = products.find((prod) => prod._id.toString() === id.toString())
-                if (product) {
-                    return {
-                        price_data: {
-                            currency: 'usd',
-                            product_data: {
-                                name: product.name,
-                            },
-                            unit_amount: product.price,
-                        },
-                        quantity,
-                    }
-                }
-                throw new BadRequestError('Product not found!')
-            }),
-            success_url: `${url}/api/order/create`,
-            cancel_url: `${url}/api/products`,
-        }
-        const { url } = await stripe.checkout.sessions.create(sessionConfig)
-        new ApiResponse(res).status(200).data({ url }).send()
+        const exists = orders.find((orderid) => orderid.toString() === orderId.toString())
+        if (!exists) throw new BadRequestError('Invalid order id.')
+
+        const order = await orderRepository.FindById(orderId)
+
+        await stripe.charges.create({
+            amount: order.amount,
+            source: token,
+            currency: 'usd',
+            description: `Order Id: ${order._id}`,
+        })
+        order.paymentStatus = true
+        await order.save()
+        new ApiResponse(res).status(200).msg('Payment successful.').send()
     } catch (e) {
-        next(e)
+        if (e instanceof BadRequestError) return next(e)
+        await orderRepository.Cancel(orderId)
+        new ApiResponse(res).status(200).msg('Order cancelled due to payment failure!').send()
     }
 }
 

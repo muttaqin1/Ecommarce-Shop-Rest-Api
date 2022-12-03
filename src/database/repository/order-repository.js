@@ -4,8 +4,7 @@ class OrderRepository {
     async Create(object) {
         try {
             return await Order.create(object)
-        } catch (e) {
-            console.log(e)
+        } catch {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to create order!')
         }
     }
@@ -74,8 +73,7 @@ class OrderRepository {
                 currentMonthOrders,
                 totalEarning,
             }
-        } catch (e) {
-            console.log(e)
+        } catch {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR)
         }
     }

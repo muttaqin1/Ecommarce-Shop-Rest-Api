@@ -3,12 +3,14 @@ const {
     ProductRepository,
     OrderRepository,
     PHistoryRepository,
+    DiscountTokenRepository,
 } = require('../database')
 
 const productRepository = new ProductRepository()
 const orderRepository = new OrderRepository()
 const customerRepository = new CustomerRepository()
 const pHistoryRepository = new PHistoryRepository()
+const dTokenRepository = new DiscountTokenRepository()
 const ApiResponse = require('../helpers/ApiResponse')
 const { BadRequestError } = require('../helpers/AppError')
 const {
@@ -116,6 +118,22 @@ const getStockStatus = async (req, res, next) => {
         next(e)
     }
 }
+const genDiscountToken = async (req, res, next) => {
+    const { name, code, discountPercentage } = req.body
+    try {
+        const data = {
+            name,
+            code,
+            discountPercentage,
+        }
+
+        const token = await dTokenRepository.Create(data)
+        new ApiResponse(res).status(200).data({ token }).send()
+    } catch (e) {
+        next(e)
+    }
+}
+
 module.exports = {
     createProduct,
     deleteProduct,
@@ -124,4 +142,5 @@ module.exports = {
     completeOrder,
     getMonthlyIncome,
     getStockStatus,
+    genDiscountToken,
 }

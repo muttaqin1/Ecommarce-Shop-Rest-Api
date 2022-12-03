@@ -9,7 +9,7 @@ const orderSchema = new Schema(
                 quantity: { type: Number, default: 1 },
             },
         ],
-
+        paymentStatus: { type: Boolean, default: false },
         status: {
             type: String,
             enum: ['pending', 'completed'],

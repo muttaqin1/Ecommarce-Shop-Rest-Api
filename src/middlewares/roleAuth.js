@@ -16,7 +16,6 @@ const verifyRole =
     }
 
 const roles = {
-    Admin: 233320,
     Seller: 465545,
     Customer: 987663,
 }

@@ -22,4 +22,9 @@ module.exports = {
     checkOrder: joi.object({
         orderId: joi.string().required(),
     }),
+    discountToken: joi.object({
+        name: joi.string().min(3).max(50).required(),
+        code: joi.string().min(6).max(6).required(),
+        discountPercentage: joi.number().max(50).required(),
+    }),
 }

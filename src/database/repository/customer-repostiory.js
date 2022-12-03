@@ -77,6 +77,20 @@ class CustomerRepository {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to get address!')
         }
     }
+    async ManageCart(customerId, arr) {
+        try {
+            const customer = await Customer.findById(customerId)
+            arr?.forEach((product) => {
+                const index = customer.cart?.findIndex(
+                    ({ productId }) => productId?.toString() === product.productId?.toString()
+                )
+                if (index !== -1) customer.cart?.splice(index, 1)
+            })
+            await customer.save()
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR)
+        }
+    }
 
     async DeleteAddress(userId, address) {
         try {

@@ -32,7 +32,7 @@ const {
 
 router.post('/auth/signup', imageUpload('avatar', 'avatars'), validator(Signup), signup)
 router.post('/auth/signin', validator(Signin), signin)
-router.put('/auth/token/refresh', tokenRefresh)
+router.put('/auth/token/refresh', Authentication, validator(refreshToken, src.PARAM), tokenRefresh)
 router.put('/auth/change-password', Authentication, validator(changePass), changePassword)
 router.delete('/auth/signout', Authentication, signout)
 router.post('/auth/forgot-password', validator(checkEmail), forgotPassword)

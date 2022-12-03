@@ -1,13 +1,12 @@
 const express = require('express')
 const { errorHandlers, expressMiddlewares } = require('./middlewares')
-const { product, customer, auth, admin, seller, stripe, order } = require('./routers')
+const { product, customer, auth, seller, stripe, order } = require('./routers')
 
 const app = express()
 
 app.use(expressMiddlewares)
 
 app.use('/api', auth)
-app.use('/api', admin)
 app.use('/api', product)
 app.use('/api', customer)
 app.use('/api', seller)

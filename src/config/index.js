@@ -5,7 +5,6 @@ module.exports = {
     server: {
         port: process.env.PORT,
         host: process.env.HOST,
-        url: `http://${process.env.HOST}:${process.env.PORT}`,
     },
 
     database: {

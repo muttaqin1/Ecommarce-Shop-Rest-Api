@@ -3,7 +3,9 @@ const {
     orderController: { createOrder, cancelOrder },
 } = require('../controllers')
 const { Authentication } = require('../middlewares')
-const { validator, src } = require('../helpers/validators')
+const {
+    validators: { validator, src },
+} = require('../helpers')
 const { CreateOrder, checkOrderId } = require('./schemas/orderSchema')
 
 router.post('/order', Authentication, validator(CreateOrder), createOrder)

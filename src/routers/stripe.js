@@ -4,6 +4,10 @@ const {
 } = require('../controllers')
 const { Authentication } = require('../middlewares')
 
-router.post('/payment', Authentication, payment)
+const {
+    validators: { validator, stripePayload },
+} = require('../helpers')
+
+router.post('/payment', Authentication, validator(stripePayload), payment)
 
 module.exports = router

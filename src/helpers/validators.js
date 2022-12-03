@@ -8,7 +8,10 @@ const src = {
     PARAM: 'params',
     IMAGE: 'image',
 }
-
+const stripePayload = joi.object({
+    orderId: joi.string().required(),
+    token: joi.string().required(),
+})
 const joiAuthBearer = () =>
     joi.string().custom((val, helper) => {
         if (!val.startsWith('Bearer ')) return helper.error('any.invalid')
@@ -33,4 +36,5 @@ module.exports = {
     validator,
     src,
     joiAuthBearer,
+    stripePayload,
 }
