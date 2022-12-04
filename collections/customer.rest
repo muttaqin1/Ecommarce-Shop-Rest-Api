@@ -1,33 +1,69 @@
+//domain
 http://localhost:4000
--i
---connect-timeout 10
+
+//this headers will be set to every request automaticaly
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3N1ZXIiOiJleGFtcGxlLmNvbSIsImF1ZGllbmNlIjoiZXhhbXBsZS5jb20iLCJjdXN0b21lciI6IjYzODg5MGM4NjM0MDMwNTU4OGEzZTQ1NSIsInByaW1hcnlLZXkiOiIwOThhYmI4OTc2OWM0MWZiYzkwOTQ1N2QzNjI0NmRmMmFmYWU1YmYxMzgxYTJlN2FiYjdmNGVjODIzM2IyMjFiYTc3Y2JhN2ZkZjgyMjhiNjQxYmQ4YmI0NTM5NWM1NWNmOTVlMGVkZTYyYTk4NWJhMmZmMDU3NTk4ZmNkOTcwYSIsImlhdCI6MTY2OTg5NTcyMCwiZXhwIjoxNjcwNzU5NzIwfQ.HOyyjJHASO2jd7dJmP3WG2HtOGv0jzkInpdlFnRRxld4xO1IwOMHdwGBCsSzvJ-FgkFaOSJmbzFGnrK3wpNAN_ZRhmw90D2hL22xzzxGUTYpsf2lGfIb52IUhS1S1NWuII0Dox0jfe09J3pzaZYYIZRr0HfO8kcjzhmg4QUICEllduQXwdggZsF1SvWMt30Fi4mBiTzORfZwLAd-JCLAF5nM8amHW8R2ORKoVrBFclG8ubA1gMqxlNDIiyFhwe0kiMeB4_IZCMWazfi9vShh5D72CP72eCkiSNI_XWQAwzrQ8m5iu69qm03TmJgEnohrydDy3hqZop4WkMtVblLlScIfZC7PwgUrhmQADEKOmqlmPAq8eL6s_4UbKqE_NFg1AYPLw3nCWcrglXt8nB52oe3DxmCI5tr-G9SyHoX9zlCP8-A9YHHS7wVE04l0c02E84fGxcqhGt-CDQiJI5jIfWYKpCRU4zJV8QavxsDk45dZIOzrSMtSvjt3swGxMlEy
---
---
-POST /api/auth/signup
-{
+Authorization: Bearer [your access token]
 
-"name":"test case",
-"email":"muttaqin1@gmail.com",
-"password":"12345678",
-"phone":"017327474712"
 
-}
 --
-POST /api/auth/signin
-{
-"email":"muttaqin1@gmail.com",
-"password":"12345678"
-}
 --
+#get customer profile
 GET /api/customer/profile
 
 --
+# add a address
 POST /api/customer/address
 {
-"street":"test",
-"postalCode":"1016",
+"street":"new road",
+"postalCode":"1216",
 "city":"dhaka",
 "country":"bangladesh"
 }
+--
+#delete a address
+DELETE /api/customer/address/638c86397a28511f54302496
+--
+#get all address
+GET /api/customer/address
+--
+#change name
+PUT /api/customer/profile/change-name
+{
+  "name":"Name changed"
+}
+--
+#change phone number
+PUT /api/customer/phone
+{
+  "phone":"12345678"
+}
+
+--
+#get your cart 
+GET /api/customer/cart
+--
+#add to cart 
+POST /api/customer/cart/
+{
+  "product":"638c8d41a8232da6031ba8dd",
+  "quantity":"3"
+}
+--
+#remove to cart
+DELETE /api/customer/cart/638c8d41a8232da6031ba8dd
+
+--
+#get wishlist 
+GET /api/customer/wishlist
+
+--
+#add to wishlist
+POST /api/customer/wishlist/638c8d41a8232da6031ba8dd
+--
+#remove to wishlist
+DELETE /api/customer/wishlist/638c8d41a8232da6031ba8dd
+
+--
+#get pending orders
+GET /api/customer/orders

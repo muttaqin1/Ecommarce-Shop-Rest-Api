@@ -1,13 +1,21 @@
 {
     "name": "ecommarce-shop",
     "version": "1.0.0",
-    "description": "A nodejs restful api of a ecommarce shop.",
+    "description": "A Nodejs restful api of a ecommarce shop.",
     "main": "src/server.js",
     "scripts": {
         "dev": "NODE_ENV=development nodemon src/server.js",
         "prod": "NODE_ENV=production node src/server.js"
     },
-    "keywords": [],
+    "keywords": [
+        "express",
+        "es6",
+        "rest",
+        "api",
+        "mongodb",
+        "node",
+        "javascript"
+    ],
     "author": "Muttaqin Muhammad",
     "license": "ISC",
     "dependencies": {
@@ -18,6 +26,8 @@
         "cors": "2.8.5",
         "dotenv": "16.0.3",
         "express": "4.18.2",
+        "express-mongo-sanitize": "2.2.0",
+        "express-rate-limit": "6.7.0",
         "helmet": "6.0.0",
         "hpp": "0.2.3",
         "joi": "17.7.0",

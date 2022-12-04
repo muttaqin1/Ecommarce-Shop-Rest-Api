@@ -134,6 +134,16 @@ const genDiscountToken = async (req, res, next) => {
     }
 }
 
+const getDiscountToken = async (req, res, next) => {
+    const { code } = req.body
+    try {
+        const token = await dTokenRepository.FindByCode(code)
+        new ApiResponse(res).status(200).data({ data }).send()
+    } catch (e) {
+        next(e)
+    }
+}
+
 module.exports = {
     createProduct,
     deleteProduct,
@@ -143,4 +153,5 @@ module.exports = {
     getMonthlyIncome,
     getStockStatus,
     genDiscountToken,
+    getDiscountToken,
 }

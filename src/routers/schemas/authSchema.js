@@ -23,7 +23,7 @@ module.exports = {
         checkOtpId: joi.object({
             otpId: joi.string().required(),
         }),
-        otp: joi.object({
+        checkOtp: joi.object({
             otp: joi.string().max(6).required(),
         }),
         checkPassword: joi.object({

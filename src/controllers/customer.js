@@ -24,10 +24,7 @@ const deleteAddress = async (req, res, next) => {
     try {
         const doesAddressExist = await customerRepository.GetSingleAddress(_id, address)
         if (!doesAddressExist) throw new BadRequestError('Invalid address.')
-        const { address: updatedAddress } = await customerRepository.DeleteAddress(
-            _id,
-            addressToDelete
-        )
+        const { address: updatedAddress } = await customerRepository.DeleteAddress(_id, address)
         new ApiResponse(res).status(200).data({ address: updatedAddress }).send()
     } catch (e) {
         next(e)
@@ -52,9 +49,11 @@ const getProfile = async (req, res, next) => {
     }
 }
 const addToCart = async (req, res, next) => {
+    const { product, quantity } = req.body
     const data = {
         id: req.user._id,
-        ...req.body,
+        product,
+        quantity,
     }
     try {
         const { cart } = await customerRepository.FindById(req.user._id)
@@ -108,13 +107,9 @@ const changeAvatar = async (req, res, next) => {
     }
 }
 const getCart = async (req, res, next) => {
-    let totalPrice = 0
     const { _id } = req.user
     try {
-        const { cart } = await customerRepository.FindById(_id)
-        cart.forEach(
-            ({ product: { price, unit } }) => (totalPrice += parseInt(price) * parseInt(unit))
-        )
+        const { cart, totalPrice } = await customerRepository.GetCart(_id)
         new ApiResponse(res).status(200).data({ totalPrice, cart }).send()
     } catch (e) {
         next(e)
@@ -153,10 +148,18 @@ const getOrders = async (req, res, next) => {
     const { _id } = req.user
     try {
         const orders = await customerRepository.GetOrders(_id)
-        if (orders?.length <= 0)
-            new ApiResponse(res).status(200).msg("You don't have any orders").send()
-
         new ApiResponse(res).status(200).data({ orders }).send()
+    } catch (e) {
+        next(e)
+    }
+}
+
+const changePhoneNumber = async (req, res, next) => {
+    const { phone } = req.body
+    const { _id } = req.user
+    try {
+        await customerRepository.ChangePhoneNumber(_id, phone)
+        new ApiResponse(res).status(200).msg('Number changed successfuly!').send()
     } catch (e) {
         next(e)
     }
@@ -176,4 +179,5 @@ module.exports = {
     removeToWishlist,
     changeAvatar,
     getOrders,
+    changePhoneNumber,
 }

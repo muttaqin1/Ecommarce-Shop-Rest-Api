@@ -27,4 +27,7 @@ module.exports = {
         url: joi.string().required(),
         publicId: joi.string().required(),
     }),
+    validatePhoneNo: joi.object({
+        phone: joi.string().min(7).max(18).required(),
+    }),
 }

@@ -10,17 +10,19 @@ const customerSchema = new Schema(
             type: String,
             required: true,
             trim: true,
+            unique: true,
         },
         email: {
             type: String,
             required: true,
             lowercase: true,
             trim: true,
+            unique: true,
         },
         emailVerified: { type: Boolean, default: false },
         avatar: {
-            url: { type: String, required: true, trim: true },
-            publicId: { type: String, required: true, trim: true },
+            url: { type: String, trim: true },
+            publicId: { type: String, trim: true },
         },
         password: {
             type: String,
@@ -41,7 +43,7 @@ const customerSchema = new Schema(
         cart: [
             {
                 product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-                unit: { type: Number, required: true },
+                quantity: { type: Number, required: true },
             },
         ],
         wishlist: [

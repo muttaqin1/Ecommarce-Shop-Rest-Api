@@ -9,6 +9,7 @@ const {
         getMonthlyIncome,
         getStockStatus,
         genDiscountToken,
+        getDiscountToken,
     },
 } = require('../controllers')
 const {
@@ -57,11 +58,16 @@ router.put(
     validator(checkOrder, src.PARAM),
     completeOrder
 )
-router.post('/discount-token', Authentication, verifyRole(roles.Customer), genDiscountToken)
-//get discount token
+router.post(
+    '/discount-token',
+    Authentication,
+    verifyRole(roles.Customer),
+    validator(discountToken),
+    genDiscountToken
+)
 
 router.get('/products/stock/status', Authentication, verifyRole(roles.Seller), getStockStatus)
 router.get('/orders/monthly-income', Authentication, verifyRole(roles.Seller), getMonthlyIncome)
-
+router.get('/discount-token', getDiscountToken)
 router.get('/orders', Authentication, verifyRole(roles.Seller), getAllOrders)
 module.exports = router

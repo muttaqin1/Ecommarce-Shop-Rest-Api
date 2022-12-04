@@ -62,7 +62,7 @@ const signin = async (req, res, next) => {
         const customer = await customerRepository.FindByEmail(email)
         if (!customer) throw new UnauthorizationError('Access Denied!')
         const verify = await AuthUtils.ValidatePassword(password, customer.password, customer.salt)
-        if (!verify) throw new UnauthorizationError('Access Denied!')
+        if (!verify) throw new UnauthorizationError('Invalid Password!')
         //deleting old keystore document
         const oldKey = await KeystoreRepository.FindByCustomerId(customer)
         if (oldKey && oldKey._id) await KeystoreRepository.Remove(oldKey._id)
@@ -72,7 +72,6 @@ const signin = async (req, res, next) => {
             keystore.primaryKey,
             keystore.secondaryKey
         )
-
         new ApiResponse(res)
             .sendCookie('REFRESH_TOKEN', refreshTokenCookieExpiry, refreshToken)
             .status(200)
@@ -184,12 +183,12 @@ const forgotPassword = async (req, res, next) => {
 
 const validateOtp = async (req, res, next) => {
     const { otp } = req.body
-    const otpDocId = req.params.otpId || false
+    const { otpId: otpDocId } = req.params
     try {
-        if (!otpDocId) throw new UnauthorizationError('Permission denied!')
         const otpDoc = await OtpRepository.Find(otpDocId)
-        if (!otpDoc) throw new UnauthorizationError('Permission denied!')
-        if (otp.toString() !== otpDoc.otp.toString()) throw new BadRequestError('Invalid otp')
+        if (!otpDoc) throw new BadRequestError('Invalid otp!')
+        if (otp.toUpperCase().toString() !== otpDoc.otp.toString())
+            throw new BadRequestError('Invalid otp')
         const verifiedOtp = await OtpRepository.Verify(otpDoc._id, true)
         new ApiResponse(res)
             .status(200)

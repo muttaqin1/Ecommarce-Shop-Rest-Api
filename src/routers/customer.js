@@ -15,6 +15,7 @@ const {
         removeToWishlist,
         changeAvatar,
         getOrders,
+        changePhoneNumber,
     },
 } = require('../controllers')
 const { Authentication } = require('../middlewares')
@@ -26,6 +27,7 @@ const {
     RemoveToCart,
     validateProduct,
     validateImage,
+    validatePhoneNo,
 } = require('./schemas/customerSchema')
 const {
     validators: { src, validator },
@@ -49,7 +51,7 @@ router.put(
 )
 router.get('/customer/address', Authentication, getAllAddress)
 router.get('/customer/profile', Authentication, getProfile)
-
+router.put('/customer/phone', Authentication, validator(validatePhoneNo), changePhoneNumber)
 router.delete(
     '/customer/cart/:productId',
     Authentication,
@@ -71,5 +73,5 @@ router.delete(
     removeToWishlist
 )
 router.get('/customer/wishlist', Authentication, getWishlist)
-router.get('/customer/order', Authentication, getOrders)
+router.get('/customer/orders', Authentication, getOrders)
 module.exports = router

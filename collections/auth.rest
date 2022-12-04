@@ -1,0 +1,60 @@
+//domain
+http://localhost:4000
+
+
+//this headers will be set to every request automaticaly
+Content-Type: application/json
+Authorization: Bearer [your access token]
+
+--
+--
+#signup
+POST /api/auth/signup
+{
+"name":"muttaqin muhammad",
+"email":"example@gmail.com",
+"password":"12345678",
+"phone":"017327474734"
+
+}
+
+--
+#signin
+POST /api/auth/signin
+{
+"email":"example@gmail.com",
+"password":"12345678"
+}
+--
+#signout
+DELETE /api/auth/signout
+
+
+--
+# get a new access token with the help of refresh token
+PUT /api/auth/token-refresh
+--
+
+PUT /api/auth/change-password
+{
+  "oldPassword": "12345678",
+  "newPassword":"12345678"
+  
+}
+
+--
+POST /api/auth/forgot-password
+{
+  "email":"example@gmail.com"
+}
+--
+POST /api/auth/validate-otp/638b1eccd605848e163e2bdb
+{
+ "otp":"HFHDHC" 
+}
+--
+POST /api/auth/reset-password/638b1eccd605848e163e2bdb
+{
+  "newPassword":"12345678",
+  "confirmPassword":"12345678"
+}

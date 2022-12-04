@@ -5,6 +5,7 @@ const otpSchema = new Schema({
         type: String,
         required: true,
         trim: true,
+        uppercase: true,
     },
     holder: {
         type: String,

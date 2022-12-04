@@ -1,11 +1,16 @@
 const express = require('express')
-const { errorHandlers, expressMiddlewares } = require('./middlewares')
+const {
+    errorHandlers,
+    expressMiddlewares,
+    rateLimit: { limitRequest },
+} = require('./middlewares')
 const { product, customer, auth, seller, stripe, order } = require('./routers')
 
 const app = express()
 
 app.use(expressMiddlewares)
 
+app.use('/api', limitRequest)
 app.use('/api', auth)
 app.use('/api', product)
 app.use('/api', customer)

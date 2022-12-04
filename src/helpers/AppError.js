@@ -25,9 +25,9 @@ class APIError extends AppError {
         name,
         statusCode = STATUS_CODES.INTERNAL_ERROR,
         description = 'Internal Server Error',
-        isOperational = true
+        isOperational
     ) {
-        super(name, statusCode, description, isOperational)
+        super(name, statusCode, description, true)
     }
 }
 

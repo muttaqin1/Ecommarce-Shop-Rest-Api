@@ -12,8 +12,8 @@ const productSchema = new Schema(
             trim: true,
         },
         banner: {
-            url: { type: String, required: true },
-            publicId: { type: String, required: true },
+            url: { type: String, trim: true },
+            publicId: { type: String, trim: true },
         },
         category: {
             type: String,

@@ -6,7 +6,7 @@ class CustomerRepository {
     async Create(object) {
         try {
             return await Customer.create(object)
-        } catch (e) {
+        } catch {
             throw new APIError(
                 'API Error',
                 STATUS_CODES.INTERNAL_ERROR,
@@ -29,7 +29,17 @@ class CustomerRepository {
             throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to find Customer!')
         }
     }
-
+    async GetCart(id) {
+        try {
+            const { cart } = await Customer.findById(id).populate('cart.product')
+            const totalPrice = cart
+                .map(({ product: { price }, quantity }) => parseInt(price) * parseInt(quantity))
+                .reduce((acc, curr) => acc + curr)
+            return { cart, totalPrice }
+        } catch {
+            new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to get cart')
+        }
+    }
     async CreateAddress(object) {
         try {
             const { id, street, postalCode, city, country } = object
@@ -63,7 +73,7 @@ class CustomerRepository {
     }
     async GetAllAddress(id) {
         try {
-            return await this.FindById(id)
+            return await Customer.findById(id).populate('address')
         } catch (e) {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Unable to get address!')
         }
@@ -119,7 +129,7 @@ class CustomerRepository {
         try {
             const cartItem = {
                 product,
-                unit: quantity,
+                quantity,
             }
             return await Customer.findOneAndUpdate(
                 { _id: id },
@@ -230,8 +240,8 @@ class CustomerRepository {
 
     async GetWishlist(userId) {
         try {
-            const { wishlist } = await this.FindById(userId)
-            return wishlist
+            const customer = await Customer.findById(userId).populate('wishlist')
+            return customer.wishlist
         } catch (e) {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to get wishlist!')
         }
@@ -270,6 +280,27 @@ class CustomerRepository {
             return customer.orders
         } catch {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to get orders!')
+        }
+    }
+    async ChangePhoneNumber(customerId, Pnumber) {
+        try {
+            return await Customer.updateOne(
+                { _id: customerId },
+                {
+                    $set: {
+                        phone: Pnumber,
+                    },
+                },
+                {
+                    new: true,
+                }
+            )
+        } catch {
+            throw new APIError(
+                'API ERROR',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Failed to change phone number'
+            )
         }
     }
 }
