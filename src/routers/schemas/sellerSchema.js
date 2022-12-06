@@ -6,6 +6,7 @@ module.exports = {
         price: joi.number().required(),
         category: joi.string().max(22).required(),
         unit: joi.number().required(),
+        availableUnits: joi.number().required(),
         supplier: joi.string().required(),
     }),
 
@@ -15,6 +16,8 @@ module.exports = {
         price: joi.number(),
         category: joi.string().max(22),
         unit: joi.number(),
+        availableUnits: joi.number(),
+        supplier: joi.string(),
     }),
     checkProductId: joi.object({
         productId: joi.string().required(),
@@ -26,5 +29,8 @@ module.exports = {
         name: joi.string().min(3).max(50).required(),
         code: joi.string().min(6).max(6).required(),
         discountPercentage: joi.number().max(50).required(),
+    }),
+    checkCode: joi.object({
+        code: joi.string().min(6).max(6).required(),
     }),
 }

@@ -1,10 +1,10 @@
 //domain
 http://localhost:4000
 
+
 //this headers will be set to every request automaticaly
 Content-Type: application/json
 Authorization: Bearer [your access token]
-
 
 --
 --
@@ -67,3 +67,7 @@ DELETE /api/customer/wishlist/638c8d41a8232da6031ba8dd
 --
 #get pending orders
 GET /api/customer/orders
+
+--
+#get purchase history
+GET /api/customer/purchase-history

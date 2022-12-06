@@ -26,7 +26,6 @@ const payment = async (req, res, next) => {
         await order.save()
         new ApiResponse(res).status(200).msg('Payment successful.').send()
     } catch (e) {
-        if (e instanceof BadRequestError) return next(e)
         await orderRepository.Cancel(orderId)
         new ApiResponse(res).status(200).msg('Order cancelled due to payment failure!').send()
     }

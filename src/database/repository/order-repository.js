@@ -52,7 +52,7 @@ class OrderRepository {
 
             if (orders?.length <= 0) {
                 return {
-                    currentMonthOrders: 'No orders',
+                    currentMonthOrders: [],
                     totalEarning: 0,
                 }
             }
@@ -68,7 +68,9 @@ class OrderRepository {
                         amount: order.amount,
                     }
                 })
-            const totalEarning = currentMonthOrders.reduce((acc, curr) => acc.amount + curr.amount)
+            const totalEarning = currentMonthOrders?.reduce(
+                (acc, curr) => Number(acc.amount) + Number(curr.amount)
+            )
             return {
                 currentMonthOrders,
                 totalEarning,

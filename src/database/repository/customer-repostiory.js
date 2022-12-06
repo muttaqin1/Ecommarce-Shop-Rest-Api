@@ -1,5 +1,5 @@
 const Customer = require('../models/Customer')
-
+const PHistory = require('../models/PurchaseHistory')
 const Address = require('../models/Address')
 const { APIError, STATUS_CODES } = require('../../helpers/AppError')
 class CustomerRepository {
@@ -300,6 +300,18 @@ class CustomerRepository {
                 'API ERROR',
                 STATUS_CODES.INTERNAL_ERROR,
                 'Failed to change phone number'
+            )
+        }
+    }
+
+    async GetPurchaseHistory(PHistoryId) {
+        try {
+            return await PHistory.findById(PHistoryId)
+        } catch {
+            throw new APIError(
+                'API ERROR',
+                STATUS_CODES.INTERNAL_ERROR,
+                'Failed to get purchase history!'
             )
         }
     }

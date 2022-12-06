@@ -18,11 +18,16 @@ const createOrder = async (req, res, next) => {
         const validateAddress = await customerRepository.GetSingleAddress(_id, address)
         if (!validateAddress) throw new BadRequestError('Invalid address!')
         if (products?.length <= 0) throw new BadRequestError('Product list is empty!')
+
         if (!totalPrice) {
             const amountArr = await Promise.all(
-                products.map(async (products) => {
-                    const product = await productRepository.FindById(products.productId)
-                    return product.price
+                products?.map(async (products) => {
+                    const product = await productRepository.FindById(products?.productId)
+                    if (!product)
+                        throw new BadRequestError(
+                            `${products?.productId} is currently not available!`
+                        )
+                    return product?.price
                 })
             )
             data.amount = amountArr.reduce((acc, curr) => acc + curr)

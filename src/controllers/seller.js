@@ -18,13 +18,14 @@ const {
 } = require('../helpers/fileUpload/cloudinary')
 
 const createProduct = async (req, res, next) => {
-    const { name, description, category, unit, price, supplier } = req.body
+    const { name, description, category, unit, price, supplier, availableUnits } = req.body
     try {
         const data = {
             name,
             description,
             category,
             unit,
+            availableUnits,
             price,
             supplier,
         }
@@ -41,8 +42,8 @@ const updateProduct = async (req, res, next) => {
     const updateItems = req.body
     try {
         if (req.image) updateItems.banner = req.image
-        const product = await FindById(productId)
-        await deleteProductImage(product.banner.publicId) //destroying the current product banner
+        const product = await productRepository.FindById(productId)
+        if (req.image) await deleteProductImage(product.banner.publicId) //destroying the current product banner
         const updatedProduct = await productRepository.UpdateProduct(productId, updateItems)
         new ApiResponse(res).status(200).data({ updatedProduct }).send()
     } catch (e) {
@@ -52,7 +53,7 @@ const updateProduct = async (req, res, next) => {
 const deleteProduct = async (req, res, next) => {
     const { productId } = req.params
     try {
-        const product = await FindById(productId)
+        const product = await productRepository.FindById(productId)
         if (!product) throw new BadRequestError("Product doesn't exist!")
         await deleteProductImage(product.banner.publicId) //destroying the product image
         await productRepository.DeleteProduct(productId)
@@ -105,7 +106,15 @@ const getMonthlyIncome = async (req, res, next) => {
 const getStockStatus = async (req, res, next) => {
     try {
         const stockOutProducts = await productRepository.GetStockStatus()
-        const mappedProducts = stockOutProducts.map((product) => product._id)
+        const mappedProducts = stockOutProducts.map(({ _id, name, banner, supplier, category }) => {
+            return {
+                id: _id,
+                name,
+                category,
+                banner,
+                supplier,
+            }
+        })
         const count = mappedProducts.length
         new ApiResponse(res)
             .status(200)
@@ -138,7 +147,7 @@ const getDiscountToken = async (req, res, next) => {
     const { code } = req.body
     try {
         const token = await dTokenRepository.FindByCode(code)
-        new ApiResponse(res).status(200).data({ data }).send()
+        new ApiResponse(res).status(200).data({ token }).send()
     } catch (e) {
         next(e)
     }

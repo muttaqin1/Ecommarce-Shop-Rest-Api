@@ -164,6 +164,15 @@ const changePhoneNumber = async (req, res, next) => {
         next(e)
     }
 }
+const getPurchaseHistory = async (req, res, next) => {
+    const { purchaseHistory } = req.user
+    try {
+        const phistory = await customerRepository.GetPurchaseHistory(purchaseHistory)
+        new ApiResponse(res).status(200).data({ purchaseHistory: phistory }).send()
+    } catch (e) {
+        next(e)
+    }
+}
 
 module.exports = {
     addNewAddress,
@@ -180,4 +189,5 @@ module.exports = {
     changeAvatar,
     getOrders,
     changePhoneNumber,
+    getPurchaseHistory,
 }

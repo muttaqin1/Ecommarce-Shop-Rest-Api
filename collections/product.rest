@@ -1,42 +1,48 @@
+//domain
 http://localhost:4000
--i
+
+//this headers will be set to every request automaticaly
 Content-Type: application/json
-
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3N1ZXIiOiJleGFtcGxlLmNvbSIsImF1ZGllbmNlIjoiZXhhbXBsZS5jb20iLCJjdXN0b21lciI6IjYzOGIxNmFkZTQ5MGFiMjJhOWIxMjQ3MCIsInByaW1hcnlLZXkiOiJhZDBmOGYyZDk0OTg1OGE4ZTFkMjgwYzM1ODkzMDI0NzcwODQ4M2FkNDI4YzdjYTU0MWY4OWI5YmMwYTZjM2E5N2QyZDc3YjU2NDVmZDFkY2VhODgzZWVhMzdiNzljNDY4NTU0M2RiYmIxMDI5NDVhODNkYjEyNWZhNTEwZjY5NiIsImlhdCI6MTY3MDE1MjMwNiwiZXhwIjoxNjcxMDE2MzA2fQ.VbWHGBh47dvkvNlb82fqMbUMIoMtEAAS_mlE80nI46rO4lagamQh2fOGhKESks8O4l35hqxXJNf8JrdoN3HofjR7o5DKIbmEEJ1v_8vP-RSEA_GHRQJGM1C9HGEQSsn314D_sMBNN4FLEmdeOfYhQRIjfMNnl1ErjlYL0tp7gwHzyxuejv6ukMXwG9tG0pYlH55mUK2THpfFkVcb4f2iybLMvC2xXOs-3Ot2Lpo_b9z1PiI5arJnonpaM-6r_sk_qm4xzer9z-MObt2Jgm-lQpIO5442VLcuRZpbf07VmTygBrkQJO-Iy6eAaD1QfnSsrNXrgJfIQfAiUaNcY_hFHncBXJ9j5h2GKQTxjvCYJCCM2PDI_Nq3oI3MqELOzNgiep9SxrWG7y4Pf-IjNpmdDz_S7AEVNozzIxcI8WRHYrjEOYFZCnMmGNBgeRmgt2kCrcq_hVJaKmBsZYUoWDl8NsbzZy0V6VwTHpew7uSjqAOmEEcYmAJu-Rm8mnYLRhk-
---
---
-
-POST /api/products 
-{
-"name":"test 11122",
-"description":"this is a test .this is a test",
-"price":2122,
-"category":"electronics",
-"unit":12,
-"supplier":"Muttaqin Muhammad"
-}
---
-#post a review
-POST /api/products/reviews/63896e52bcc609a680105506
-
-
-{
-  "rating":5,
-  "text":"nice product!"
-}
+Authorization: Bearer [your access token]
 
 --
-#update a review
-PUT /api/products/reviews/63896e52bcc609a680105506 
-{
-  "rating":1,
-  "text":"Bad  product!"
-}
-
 --
-DELETE /api/products/reviews/63896e52bcc609a680105506
-
---
+#get products 
 GET /api/products
+
 --
-GET /api/products/stock-status
+#search products by name
+GET /api/products/Watermelon
+
+--
+#search products by category
+GET /api/products/category/Fruits
+
+--
+#find selected products 
+POST /api/products/ids
+{
+"ids":["638dd20ce9fc65bdfa588d3b"]
+
+}
+--
+#review a product 
+POST /api/products/reviews/638dd20ce9fc65bdfa588d3b
+{
+"rating":"5",
+"text":"the Watermelon is very fresh .I totally loved it."
+
+}
+--
+//update your review
+PUT /api/products/reviews/638dd20ce9fc65bdfa588d3b
+{
+"rating":"1",
+"text":"Very bad Watermelon."
+
+}
+--
+#delete review
+DELETE /api/products/reviews/638dd20ce9fc65bdfa588d3b
+
+--

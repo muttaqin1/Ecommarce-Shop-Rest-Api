@@ -22,6 +22,7 @@ const {
     checkProductId,
     checkOrder,
     discountToken,
+    checkCode,
 } = require('./schemas/sellerSchema')
 const {
     validators: { validator, src },
@@ -52,14 +53,14 @@ router.delete(
     deleteProduct
 )
 router.put(
-    '/orders/:orderId',
+    '/orders/complete/:orderId',
     Authentication,
     verifyRole(roles.Seller),
     validator(checkOrder, src.PARAM),
     completeOrder
 )
 router.post(
-    '/discount-token',
+    '/token/discount-token',
     Authentication,
     verifyRole(roles.Customer),
     validator(discountToken),
@@ -68,6 +69,6 @@ router.post(
 
 router.get('/products/stock/status', Authentication, verifyRole(roles.Seller), getStockStatus)
 router.get('/orders/monthly-income', Authentication, verifyRole(roles.Seller), getMonthlyIncome)
-router.get('/discount-token', getDiscountToken)
-router.get('/orders', Authentication, verifyRole(roles.Seller), getAllOrders)
+router.post('/discount-token', validator(checkCode), getDiscountToken)
+router.get('/orders/pending-orders', Authentication, verifyRole(roles.Seller), getAllOrders)
 module.exports = router

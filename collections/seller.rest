@@ -1,15 +1,63 @@
+//domain
 http://localhost:4000
--i
+
+//this headers will be set to every request automaticaly
 Content-Type: application/json
+Authorization: Bearer [your access token]
 
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3N1ZXIiOiJleGFtcGxlLmNvbSIsImF1ZGllbmNlIjoiZXhhbXBsZS5jb20iLCJjdXN0b21lciI6IjYzODg5MGM4NjM0MDMwNTU4OGEzZTQ1NSIsInByaW1hcnlLZXkiOiIwOThhYmI4OTc2OWM0MWZiYzkwOTQ1N2QzNjI0NmRmMmFmYWU1YmYxMzgxYTJlN2FiYjdmNGVjODIzM2IyMjFiYTc3Y2JhN2ZkZjgyMjhiNjQxYmQ4YmI0NTM5NWM1NWNmOTVlMGVkZTYyYTk4NWJhMmZmMDU3NTk4ZmNkOTcwYSIsImlhdCI6MTY2OTg5NTcyMCwiZXhwIjoxNjcwNzU5NzIwfQ.HOyyjJHASO2jd7dJmP3WG2HtOGv0jzkInpdlFnRRxld4xO1IwOMHdwGBCsSzvJ-FgkFaOSJmbzFGnrK3wpNAN_ZRhmw90D2hL22xzzxGUTYpsf2lGfIb52IUhS1S1NWuII0Dox0jfe09J3pzaZYYIZRr0HfO8kcjzhmg4QUICEllduQXwdggZsF1SvWMt30Fi4mBiTzORfZwLAd-JCLAF5nM8amHW8R2ORKoVrBFclG8ubA1gMqxlNDIiyFhwe0kiMeB4_IZCMWazfi9vShh5D72CP72eCkiSNI_XWQAwzrQ8m5iu69qm03TmJgEnohrydDy3hqZop4WkMtVblLlScIfZC7PwgUrhmQADEKOmqlmPAq8eL6s_4UbKqE_NFg1AYPLw3nCWcrglXt8nB52oe3DxmCI5tr-G9SyHoX9zlCP8-A9YHHS7wVE04l0c02E84fGxcqhGt-CDQiJI5jIfWYKpCRU4zJV8QavxsDk45dZIOzrSMtSvjt3swGxMlEy
--
 --
 --
+#create a product
+POST /api/products
+{
+  "name":"Watermelon",
+  "price":122,
+  "description":"Great quality of Watermelon",
+  "category":"Fruits",
+  "unit":1,
+  "availableUnits":200,
+  "supplier":"Muttaqin muhammad"
+  
+}
 
+--
+#update a product
+PUT /api/products/638dcc7c83c3d8b50ac98b58
+{
+"name":"Product updated"
+}
+--
+#delete a product
+DELETE /api/products/638dcc7c83c3d8b50ac98b58
+
+--
+#complete a order
+PUT /api/orders/complete/638f27780229c023511edb53 
+
+--
+#get the stock status
+GET /api/products/stock/status
+
+--
+#get monthly income
+GET /api/orders/monthly-income
+--
+#get all orders
+GET /api/orders/pending-orders
+
+--
+#generate discount token
+POST /api/token/discount-token
+{
+"name":"winter special discount",
+"code":"WIN332",
+"discountPercentage":30
+}
+
+--
+#get discount token
 POST /api/discount-token
 {
-  "name":"test 123",
-  "code":"frt324",
-  "discountPercentage":"50"
+  "code":"WIN332"
 }
+--

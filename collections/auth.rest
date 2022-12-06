@@ -32,9 +32,10 @@ DELETE /api/auth/signout
 
 --
 # get a new access token with the help of refresh token
+//refresh token is required from cookies
 PUT /api/auth/token-refresh
 --
-
+//change password
 PUT /api/auth/change-password
 {
   "oldPassword": "12345678",
@@ -43,16 +44,19 @@ PUT /api/auth/change-password
 }
 
 --
+//forgot password 
 POST /api/auth/forgot-password
 {
   "email":"example@gmail.com"
 }
 --
+#validate the otp of forgot password
 POST /api/auth/validate-otp/638b1eccd605848e163e2bdb
 {
  "otp":"HFHDHC" 
 }
 --
+#after successfuly validate opt user can access this route to reset password
 POST /api/auth/reset-password/638b1eccd605848e163e2bdb
 {
   "newPassword":"12345678",

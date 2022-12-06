@@ -133,8 +133,8 @@ class ProductRepository {
     async ManageStockForNewOrders(productArr) {
         try {
             for (const { productId, quantity } of productArr) {
-                const { unit: availableUnits, name } = await Product.findById(productId)
-                if (availableUnits - quantity < 0)
+                const { availableUnits, name } = await Product.findById(productId)
+                if (availableUnits - quantity <= 0)
                     throw new BadRequestError(
                         `${name} is out of stock. availableUnits :${availableUnits}`
                     )
@@ -143,7 +143,7 @@ class ProductRepository {
                     { _id: productId },
                     {
                         $set: {
-                            unit: updatedStock,
+                            availableUnits: updatedStock,
                         },
                     }
                 )
@@ -156,7 +156,7 @@ class ProductRepository {
         try {
             productArr?.forEach(async ({ productId, quantity }) => {
                 const product = await Product.findById(productId)
-                product.unit += quantity
+                product.availableUnits += quantity
                 await product.save()
             })
         } catch {
@@ -166,9 +166,8 @@ class ProductRepository {
 
     async GetStockStatus() {
         try {
-            return await Product.find({ unit: 0 })
-        } catch (e) {
-            console.log(e)
+            return await Product.find({ availableUnits: 0 })
+        } catch {
             throw new APIError(
                 'API ERROR',
                 STATUS_CODES.INTERNAL_ERROR,

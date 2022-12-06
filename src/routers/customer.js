@@ -16,6 +16,7 @@ const {
         changeAvatar,
         getOrders,
         changePhoneNumber,
+        getPurchaseHistory,
     },
 } = require('../controllers')
 const { Authentication } = require('../middlewares')
@@ -72,6 +73,8 @@ router.delete(
     validator(validateProduct, src.PARAM),
     removeToWishlist
 )
+router.get('/customer/purchase-history', Authentication, getPurchaseHistory)
+
 router.get('/customer/wishlist', Authentication, getWishlist)
 router.get('/customer/orders', Authentication, getOrders)
 module.exports = router
