@@ -1,0 +1,12 @@
+//domain
+http://localhost:6000
+
+
+//this headers will be set to every request automaticaly
+Content-Type: application/json
+Authorization: Bearer [your access token]
+
+--
+--
+
+POST /api/admin

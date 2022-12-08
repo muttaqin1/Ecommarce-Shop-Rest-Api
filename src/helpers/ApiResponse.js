@@ -1,8 +1,3 @@
-/*
- * Author:Muttaqin Muhammad
- * facebook:https://www.facebook.com/Muttaqin01
- * description: Creating a class to send response and prevent code repeating. .
- */
 class ApiResponse {
     constructor(res) {
         this.Response = res

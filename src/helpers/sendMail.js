@@ -17,6 +17,7 @@ const sendMail = ({ title, body, reciever }) =>
                 subject: title,
                 text: body,
             }
+            //creating a transport
             const transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -26,10 +27,12 @@ const sendMail = ({ title, body, reciever }) =>
                 port: 465,
                 host: 'smtp@gmail.com',
             })
-            const {
-                envelope: { to },
-            } = await transporter.sendMail(mailOptions)
-            if (to.indexOf(reciever) === -1) throw new Error('')
+            //sending mail
+            const { envelope } = await transporter.sendMail(mailOptions)
+            /*the transporter.sendMail function returns a object and
+ we can find the email recivers email inside that object . so i am checking if the user email exists there
+           */
+            if (envelope.to?.indexOf(reciever) === -1) throw new Error('')
             resolve(true)
         } catch {
             reject(new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to send Email!'))
@@ -42,13 +45,12 @@ const sendOtp = async (reciever) => {
         if (!user) throw new BadRequestError('Customer is not registered')
         const otp = codeGenerator(6)
         if (!otp) throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR)
-
+        //mail body
         const title = `${otp} is your ${app_name} account recovery code.`
         const body = `Hi ${user.name},
                       We received a request to reset your ${app_name} password.
                       Enter the following code reset your password:
                                   [ ${otp} ]  `
-
         const sendmail = await sendMail({ title, body, reciever })
         if (!sendmail)
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to send Email.')

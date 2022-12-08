@@ -1,6 +1,7 @@
-const { CustomerRepository } = require('../database')
+const { CustomerRepository, IssueRepository } = require('../database')
 const ApiResponse = require('../helpers/ApiResponse')
 const customerRepository = new CustomerRepository()
+const issueRepository = new IssueRepository()
 const { BadRequestError } = require('../helpers/AppError')
 
 const addNewAddress = async (req, res, next) => {
@@ -173,7 +174,17 @@ const getPurchaseHistory = async (req, res, next) => {
         next(e)
     }
 }
-
+const reportAProblem = async (req, res, next) => {
+    const { title, body } = req.body
+    const { email } = req.user
+    try {
+        const data = { title, email, body }
+        const Issue = await issueRepository.Create(data)
+        new ApiResponse(res).status(200).data({ Issue }).send()
+    } catch (e) {
+        next(e)
+    }
+}
 module.exports = {
     addNewAddress,
     getProfile,

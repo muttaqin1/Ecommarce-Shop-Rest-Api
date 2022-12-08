@@ -1,14 +1,8 @@
-/*
- * Author:Muttaqin Muhammad
- * facebook:https://www.facebook.com/Muttaqin01
- * description: Creating an array of middleware to complete the full image upload operation and use it in any router.
- */
-
 const multer = require('./multer')
 const {
     uploader: { upload: uploadImage },
 } = require('./cloudinary')
-
+//this middleware checks the req.file and upload the image into cloudinary
 const imageUpload = (folderName) => async (req, res, next) => {
     if (req.file) {
         const { secure_url, public_id } = await uploadImage(req.file.path, {
@@ -22,5 +16,5 @@ const imageUpload = (folderName) => async (req, res, next) => {
 
     next()
 }
-
+//routers can take a array of middlewares. this function returns an array of middlewares
 module.exports = (fieldName, folderName) => [multer.single(fieldName), imageUpload(folderName)]

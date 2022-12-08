@@ -26,7 +26,9 @@ const validator =
             const { error } = schema.validate(req[source])
             if (!error) return next()
             const { details } = error
+            //replacing all the unwanted characters
             const message = details.map((i) => i.message.replace(/['"\]\[]+/g, '')).join(',')
+
             next(new BadRequestError(message))
         } catch (e) {
             next(e)

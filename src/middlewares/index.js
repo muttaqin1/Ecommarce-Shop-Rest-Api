@@ -14,15 +14,15 @@ const {
 const corsOptions = require('./cors')
 
 const expressMiddlewares = [
-    helmet(),
-    compression(),
-    express.json({ limit: '1mb' }),
+    helmet(), //Set's security http headers
+    compression(), //compress the response data
+    express.json({ limit: '1mb' }), //Reading data from body
     express.urlencoded({ extended: true, limit: '1mb' }),
-    cors(corsOptions),
-    cookieParser(secret),
-    mongoSanitize(),
-    xss(),
-    hpp(),
+    cors(corsOptions), //Allow cross-origin requests
+    cookieParser(secret), //parse the cookie
+    mongoSanitize(), //Data sanitization against Nosql query injection
+    xss(), // Data sanitization against xss
+    hpp(), // Prevent parameter pollution
 ]
 if (currentEnvironment === 'development') expressMiddlewares.push(require('morgan')('dev'))
 

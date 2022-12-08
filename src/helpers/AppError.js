@@ -5,7 +5,7 @@ const STATUS_CODES = {
     NOT_FOUND: 404,
     INTERNAL_ERROR: 500,
 }
-
+//base error class
 class AppError extends Error {
     constructor(name, statusCode, description, isOperational, errorStack, logingErrorResponse) {
         super(description)

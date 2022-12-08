@@ -25,7 +25,9 @@ const signup = async (req, res, next) => {
     try {
         const customer = await customerRepository.FindByEmail(email)
         if (customer) throw new BadRequestError('User already exist!')
+        //generating salt to hash a plain text password
         const salt = await AuthUtils.GenerateSalt()
+        //hashing the plain text password
         const hashedPassword = await AuthUtils.GeneratePassword(password, salt)
 
         const data = {
@@ -36,16 +38,21 @@ const signup = async (req, res, next) => {
             password: hashedPassword,
             salt,
         }
+        //optional avatar upload
         if (req.image) data.avatar = req.image
+        //creating customer
         const createdCustomer = await customerRepository.Create(data)
+        //creating purchase history
         await pHistoryRepository.Create(createdCustomer._id)
+        //creating a keystore document
         const keystore = await KeystoreRepository.Create(createdCustomer._id)
+        //creating access and refresh token
         const { accessToken, refreshToken } = await AuthUtils.createTokens(
             createdCustomer._id,
             keystore.primaryKey,
             keystore.secondaryKey
         )
-
+        //refresh token will be stored in cookies
         new ApiResponse(res)
             .sendCookie('REFRESH_TOKEN', refreshTokenCookieExpiry, refreshToken)
             .status(200)
@@ -61,12 +68,15 @@ const signin = async (req, res, next) => {
     try {
         const customer = await customerRepository.FindByEmail(email)
         if (!customer) throw new UnauthorizationError('Access Denied!')
+        //validating password
         const verify = await AuthUtils.ValidatePassword(password, customer.password, customer.salt)
         if (!verify) throw new UnauthorizationError('Invalid Password!')
         //deleting old keystore document
         const oldKey = await KeystoreRepository.FindByCustomerId(customer)
-        if (oldKey && oldKey._id) await KeystoreRepository.Remove(oldKey._id)
+        if (oldKey && oldKey?._id) await KeystoreRepository.Remove(oldKey._id)
+        //creating a new keystore document
         const keystore = await KeystoreRepository.Create(customer._id)
+        //creating access and refresh token
         const { accessToken, refreshToken } = await AuthUtils.createTokens(
             customer,
             keystore.primaryKey,
@@ -83,7 +93,9 @@ const signin = async (req, res, next) => {
 }
 const signout = async (req, res, next) => {
     try {
+        //removing the keystore document
         await KeystoreRepository.Remove(req.keystore._id)
+        //sending response and removing refresh token form cookies
         new ApiResponse(res)
             .removeCookie('REFRESH_TOKEN')
             .status(200)
@@ -97,27 +109,34 @@ const signout = async (req, res, next) => {
 const tokenRefresh = async (req, res, next) => {
     const { authorization } = req.headers
     try {
+        //reading access and refresh token
         const AccessToken = await AuthUtils.getAccessToken(authorization)
         const RefreshToken = await AuthUtils.getRefreshToken(req.signedCookies, 'REFRESH_TOKEN')
-        const accessTokenPayload = await JWT.decode(AccessToken) //decoding access token
+        //decoding access token
+        const accessTokenPayload = await JWT.decode(AccessToken)
         if (!accessTokenPayload?.customer && !accessTokenPayload?.primaryKey)
             throw new UnauthorizationError('Invalid access Token!')
-
+        //searching customer with the id which i get from accecc token
         const getCustomer = await customerRepository.FindById(accessTokenPayload.customer)
         if (!getCustomer) throw new UnauthorizationError('Customer is not registered!')
-        const refreshTokenPayload = await JWT.decode(RefreshToken) //decoding refresh token
+        //decoding refresh token
+        const refreshTokenPayload = await JWT.decode(RefreshToken)
         if (!refreshTokenPayload?.customer && !refreshTokenPayload?.secondaryKey)
             throw new UnauthorizationError('Invalid refresh Token!')
         if (refreshTokenPayload.customer !== accessTokenPayload.customer)
             throw new UnauthorizationError('Invalid token')
+        //searching the keystore document
         const keystore = await KeystoreRepository.Find(
             getCustomer._id,
             accessTokenPayload.primaryKey,
             refreshTokenPayload.secondaryKey
         )
         if (!keystore) throw new UnauthorizationError('Invalid access token')
+        //removing the old keystore
         await KeystoreRepository.Remove(keystore._id)
+        //creating new keystore document
         const newKeystore = await KeystoreRepository.Create(getCustomer._id)
+        //creating access and refresh token
         const { accessToken, refreshToken } = await AuthUtils.createTokens(
             getCustomer,
             newKeystore.primaryKey,
@@ -135,7 +154,9 @@ const tokenRefresh = async (req, res, next) => {
 const changePassword = async (req, res, next) => {
     const { oldPassword, newPassword } = req.body
     try {
+        //generating salt for hashing a plain text password
         const salt = await AuthUtils.GenerateSalt()
+        //generating password with the help of plain text password and salt
         const newPass = await AuthUtils.GeneratePassword(newPassword, salt)
 
         const validateOldPass = await AuthUtils.ValidatePassword(
@@ -145,6 +166,7 @@ const changePassword = async (req, res, next) => {
         )
         if (!validateOldPass) throw new BadRequestError('Old password doesnt mathched.')
 
+        //changing the password
         await customerRepository.ChangePassword(req.user._id, newPass, salt)
         new ApiResponse(res).status(200).msg('Password change successful.').send()
     } catch (e) {
@@ -168,8 +190,11 @@ const forgotPassword = async (req, res, next) => {
         const customer = await customerRepository.FindByEmail(email)
         if (!customer) throw new BadRequestError('Customer is not registered.')
         const existingOtp = await OtpRepository.FindByEmail(email)
+        //removing duplicate data
         if (existingOtp) await OtpRepository.Remove(existingOtp._id)
+        //sending otp by email
         const otp = await sendOtp(email)
+        //creating a new otp document
         const otpDoc = await OtpRepository.Create(otp, email)
         new ApiResponse(res)
             .status(200)
@@ -189,6 +214,7 @@ const validateOtp = async (req, res, next) => {
         if (!otpDoc) throw new BadRequestError('Invalid otp!')
         if (otp.toUpperCase().toString() !== otpDoc.otp.toString())
             throw new BadRequestError('Invalid otp')
+        //verifing the otp
         const verifiedOtp = await OtpRepository.Verify(otpDoc._id, true)
         new ApiResponse(res)
             .status(200)
@@ -209,7 +235,13 @@ const resetPassword = async (req, res, next) => {
         if (!otpDoc) throw new UnauthorizationError('Permission denied')
         if (!otpDoc.verified) throw new UnauthorizationError('Permission denied')
         const customer = await customerRepository.FindByEmail(otpDoc.holder)
-        await customerRepository.ChangePassword(customer._id, password)
+        //generating salt
+        const salt = await AuthUtils.GenerateSalt()
+        //hashing the plain text password
+        const hashedPassword = await AuthUtils.GeneratePassword(password, salt)
+        //changing the password
+        await customerRepository.ChangePassword(customer._id, hashedPassword)
+        //removing the otp document
         await OtpRepository.Remove(otpDocId)
         new ApiResponse(res).status(200).msg('password reset successful!').send()
     } catch (e) {

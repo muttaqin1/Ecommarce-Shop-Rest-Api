@@ -7,4 +7,5 @@ module.exports = {
     OrderRepository: require('./repository/order-repository'),
     PHistoryRepository: require('./repository/PHistory-repository'),
     DiscountTokenRepository: require('./repository/discountToken-repository'),
+    IssueRepository: require('./repository/Issue-repository'),
 }

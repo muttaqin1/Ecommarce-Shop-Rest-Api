@@ -5,4 +5,5 @@ module.exports = {
     seller: require('./seller'),
     stripe: require('./stripe'),
     order: require('./order'),
+    admin: require('./admin'),
 }

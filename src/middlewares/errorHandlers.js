@@ -5,6 +5,7 @@ const NotFound = (req, res, next) => {
 }
 
 const errorHandler = (err, req, res, next) => {
+    //checks if the header is already sent
     if (res.headerSent) return next()
     const payload = {
         success: false,
