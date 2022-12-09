@@ -19,6 +19,13 @@ class IssueRepository {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to get Issues!')
         }
     }
+    async DeleteAIssue(id) {
+        try {
+            return await Issue.deleteOne({ _id: id })
+        } catch {
+            throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to delete Issue.')
+        }
+    }
 }
 
 module.exports = IssueRepository

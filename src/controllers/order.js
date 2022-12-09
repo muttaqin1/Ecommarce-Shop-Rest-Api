@@ -1,13 +1,19 @@
-const { OrderRepository, ProductRepository, CustomerRepository } = require('../database')
+const {
+    OrderRepository,
+    ProductRepository,
+    CustomerRepository,
+    DiscountTokenRepository,
+} = require('../database')
 const orderRepository = new OrderRepository()
 const productRepository = new ProductRepository()
 const customerRepository = new CustomerRepository()
+const dTokenRepository = new DiscountTokenRepository()
 const ApiResponse = require('../helpers/ApiResponse')
 const { BadRequestError } = require('../helpers/AppError')
 
 const createOrder = async (req, res, next) => {
     const { _id } = req.user
-    const { totalPrice, products, address } = req.body
+    const { totalPrice, products, address, discountToken } = req.body
     try {
         const data = {
             customerId: _id,
@@ -15,6 +21,7 @@ const createOrder = async (req, res, next) => {
             amount: totalPrice,
             address,
         }
+
         const validateAddress = await customerRepository.GetSingleAddress(_id, address)
         if (!validateAddress) throw new BadRequestError('Invalid address!')
         if (products?.length <= 0) throw new BadRequestError('Product list is empty!')
@@ -31,6 +38,15 @@ const createOrder = async (req, res, next) => {
                 })
             )
             data.amount = amountArr.reduce((acc, curr) => acc + curr)
+        }
+        if (discountToken) {
+            const token = await dTokenRepository.FindByCode(discountToken)
+
+            if (token)
+                data.amount = await dTokenRepository.CalculateDiscount(
+                    data.amount,
+                    token.discountPercentage
+                )
         }
         await productRepository.ManageStockForNewOrders(products)
         await customerRepository.ManageCart(_id, products)

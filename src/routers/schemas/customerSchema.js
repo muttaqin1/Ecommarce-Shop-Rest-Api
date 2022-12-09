@@ -30,4 +30,8 @@ module.exports = {
     validatePhoneNo: joi.object({
         phone: joi.string().min(7).max(18).required(),
     }),
+    ReportAProblem: joi.object({
+        title: joi.string().min(10).required(),
+        body: joi.string().min(20).required(),
+    }),
 }

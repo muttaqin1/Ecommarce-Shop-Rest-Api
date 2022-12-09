@@ -5,6 +5,7 @@ const tokenSchema = new Schema(
         name: { type: String, required: true, trim: true },
         code: { type: String, required: true, trim: true, uppercase: true, unique: true },
         discountPercentage: { type: Number, required: true },
+
         createdAt: {
             type: Date,
             default: Date.now,

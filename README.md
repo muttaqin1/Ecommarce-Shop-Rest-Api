@@ -6,9 +6,9 @@ A Restful E-commerce shop API.
 
 ### Built With 
 
-* ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
-* ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
-* ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) 
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) 
 
 
 
@@ -16,10 +16,10 @@ A Restful E-commerce shop API.
 # Features :
 
 ## Auth
-* Sign In ,Sign Up ,Sign Out with the help of JSON WEB TOKEN (Public key cryptography RSA -RS256- algorithm is used sign and vaidate JWT Token)
+* Sign In ,Sign Up ,Sign Out with the help of JSON WEB TOKEN (Public key cryptography RSA -RS256- algorithm is used to sign and vaidate JWT Token)
 * Access Token & Refresh Token Authentication.
 * Role based Authorization.
-* Customer can change his/her Password.
+* Customer can change their Password.
 * Forgot Password -Customer can reset their Password Using (Two Factor Authentication)
 
 ## Customer
@@ -119,5 +119,7 @@ create a .env file and use the .env.example to add all the values
 
 
 ## Contact
-Project Link: [https://github.com/muttaqin1/nodejs-Ecommarce-shop-rest-api](https://github.com/muttaqin1/nodejs-Ecommarce-shop-rest-api)
+* Email: mdmuttaqin20@gmail.com
+* Facebook : https://www.facebook.com/Muttaqin01
+* Project Link: [https://github.com/muttaqin1/nodejs-Ecommarce-shop-rest-api](https://github.com/muttaqin1/nodejs-Ecommarce-shop-rest-api)
 

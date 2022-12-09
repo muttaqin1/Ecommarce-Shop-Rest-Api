@@ -16,5 +16,8 @@ class DiscountTokenRepository {
             throw new APIError('API ERROR', STATUS_CODES.INTERNAL_ERROR, 'Failed to find token!')
         }
     }
+    async CalculateDiscount(price, discountPercentage) {
+        return price % discountPercentage
+    }
 }
 module.exports = DiscountTokenRepository

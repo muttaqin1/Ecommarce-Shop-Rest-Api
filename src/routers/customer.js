@@ -17,6 +17,7 @@ const {
         getOrders,
         changePhoneNumber,
         getPurchaseHistory,
+        reportAProblem,
     },
 } = require('../controllers')
 const { Authentication } = require('../middlewares')
@@ -29,6 +30,7 @@ const {
     validateProduct,
     validateImage,
     validatePhoneNo,
+    ReportAProblem,
 } = require('./schemas/customerSchema')
 const {
     validators: { src, validator },
@@ -77,4 +79,5 @@ router.get('/customer/purchase-history', Authentication, getPurchaseHistory)
 
 router.get('/customer/wishlist', Authentication, getWishlist)
 router.get('/customer/orders', Authentication, getOrders)
+router.post('/customer/report-problem', Authentication, validator(ReportAProblem), reportAProblem)
 module.exports = router

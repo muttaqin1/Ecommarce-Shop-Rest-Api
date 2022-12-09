@@ -201,4 +201,5 @@ module.exports = {
     getOrders,
     changePhoneNumber,
     getPurchaseHistory,
+    reportAProblem,
 }
