@@ -1,8 +1,7 @@
 
 
 ## About The Project
-# A Restful E-commerce shop API.
-Made with Nodejs, Expressjs, Mongodb
+A Restful E-commerce shop API.
 
 ### Built With 
 
