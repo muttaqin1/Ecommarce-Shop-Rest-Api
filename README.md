@@ -19,7 +19,7 @@ A Restful E-commerce shop API.
 * Access Token & Refresh Token Authentication.
 * Role based Authorization.
 * Customer can change their Password.
-* Forgot Password -Customer can reset their Password Using (Two Factor Authentication)
+* Forgot Password -Customer can reset their Password Using Two Factor Authentication
 
 ## Customer
 * Customer can get their profile.
